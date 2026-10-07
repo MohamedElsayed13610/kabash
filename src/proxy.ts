@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 /**
  * Keeps the Supabase session cookie fresh and sends signed-out visitors to the login page.
- * This is only the front door: every staff page and API route ALSO checks the role on the server.
+ * This is only the front door: every staff/admin page and API route ALSO checks the role on the server.
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -21,7 +21,7 @@ export async function proxy(request: NextRequest) {
 
   const { data } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
-  const isPage = pathname.startsWith("/staff");
+  const isPage = pathname.startsWith("/staff") || pathname.startsWith("/admin");
 
   if (isPage && !data.user && pathname !== "/staff/login") {
     const url = request.nextUrl.clone();
@@ -32,4 +32,4 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const config = { matcher: ["/staff/:path*", "/api/staff/:path*"] };
+export const config = { matcher: ["/staff/:path*", "/admin/:path*", "/api/staff/:path*", "/api/admin/:path*"] };
