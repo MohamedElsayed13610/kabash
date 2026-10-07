@@ -7,6 +7,7 @@ import { Scene, type SceneKey } from "./Scene";
 import { RollingNumber } from "../ui/RollingNumber";
 import { isTerminal, stageOf, type OrderStatus, type TrackingData } from "@/lib/tracking-types";
 import { formatKg, formatMoney } from "@/lib/format";
+import { addRecentOrder } from "@/lib/recent-orders";
 import { ar } from "@/messages/ar";
 
 const POLL_MS = 5000;
@@ -225,6 +226,7 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
       failures.current = 0;
       setProblem(null);
       setData(next);
+      addRecentOrder(next.code, next.totalFinal ?? next.totalEstimate); // so it can be reopened from the home page
       if (lastStatus.current && lastStatus.current !== next.status) {
         navigator.vibrate?.([20, 40, 20]);
         setAnnounce(headline(next.status, next.fulfillment, next.etaMinutes).big);

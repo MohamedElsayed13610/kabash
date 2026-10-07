@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { clientIp, createOrder, hashKey, limit } from "@/lib/server/order-service";
 import { fail, readJson } from "@/lib/server/http";
+import { newOrderPayload, sendPush } from "@/lib/server/push";
 import { orderSchema } from "@/lib/validation/order";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +17,12 @@ export async function POST(req: Request) {
     if (input.website) return NextResponse.json({ code: "XXXXXX", total: 0 });
 
     await limit(`order:phone:${hashKey(input.phone)}`, 3, 600); // 3 orders / 10 min per phone
-    const { code, total } = await createOrder(input);
-    return NextResponse.json({ code, total }, { status: 201 });
+    const order = await createOrder(input);
+
+    // Alert staff phones after the response is sent, so a slow push service never delays the customer.
+    after(() => sendPush(newOrderPayload(order)));
+
+    return NextResponse.json({ code: order.code, total: order.total }, { status: 201 });
   } catch (e) {
     return fail(e);
   }

@@ -128,7 +128,15 @@ export async function buildQuote(input: {
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no 0/O/1/I
 const makeCode = () => Array.from({ length: 6 }, () => CODE_ALPHABET[randomInt(CODE_ALPHABET.length)]).join("");
 
-export async function createOrder(input: OrderInput): Promise<{ code: string; total: number }> {
+export interface CreatedOrder {
+  code: string;
+  total: number;
+  itemCount: number;
+  fulfillment: "delivery" | "pickup";
+  hasButcher: boolean;
+}
+
+export async function createOrder(input: OrderInput): Promise<CreatedOrder> {
   const quote = await buildQuote(input);
   if (!quote.canOrder) {
     throw new ApiError(403, "closed", "المطعم مقفول دلوقتي. هنستقبل طلبك أول ما نفتح.");
@@ -183,7 +191,13 @@ export async function createOrder(input: OrderInput): Promise<{ code: string; to
       await db.from("orders").delete().eq("id", order.id); // never leave a half-saved order behind
       throw new ApiError(500, "db_error", "مقدرناش نسجل الطلب. جرب تاني.");
     }
-    return { code: order.code, total: t.total };
+    return {
+      code: order.code,
+      total: t.total,
+      itemCount: t.lines.length,
+      fulfillment: input.fulfillment,
+      hasButcher: t.hasButcher,
+    };
   }
   throw new ApiError(500, "code_collision", "حصلت مشكلة. جرب تاني.");
 }

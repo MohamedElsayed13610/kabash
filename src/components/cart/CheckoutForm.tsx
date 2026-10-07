@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useCart } from "./CartProvider";
 import { RollingNumber } from "../ui/RollingNumber";
 import { orderSchema } from "@/lib/validation/order";
+import { addRecentOrder } from "@/lib/recent-orders";
 import type { OrderTotals } from "@/lib/pricing/order";
 import { ar } from "@/messages/ar";
 import { formatKg, formatMoney } from "@/lib/format";
@@ -171,6 +172,7 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
       } catch {
         /* storage blocked */
       }
+      addRecentOrder(json.code, json.total);
       clear();
       router.push(`/order/${json.code}`);
     } catch {
