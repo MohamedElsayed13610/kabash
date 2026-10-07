@@ -91,3 +91,61 @@ body {
   to { transform: translateY(0); opacity: 1; }
 }
 .rise-in { animation: rise-in 0.7s ease-out backwards; }
+
+/* Order tracking scenes. Loops are transform/opacity only. */
+@keyframes flame {
+  0%, 100% { transform: scale(1, 1); opacity: 0.95; }
+  35% { transform: scale(0.88, 1.18); opacity: 1; }
+  70% { transform: scale(1.08, 0.9); opacity: 0.85; }
+}
+.flame { animation: flame 0.9s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+
+@keyframes lid {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-2px) rotate(-2deg); }
+}
+.lid { animation: lid 1.3s ease-in-out infinite; transform-box: fill-box; transform-origin: left bottom; }
+
+@keyframes drive {
+  0% { transform: translateX(150px); }
+  100% { transform: translateX(-150px); }
+}
+.drive { animation: drive 3.8s linear infinite; }
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+.bob { animation: bob 0.45s ease-in-out infinite; }
+
+@keyframes road {
+  from { transform: translateX(0); }
+  to { transform: translateX(-32px); }
+}
+.road { animation: road 0.7s linear infinite; }
+
+@keyframes pop {
+  0% { transform: scale(0.3) rotate(-12deg); opacity: 0; }
+  65% { transform: scale(1.12) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+.pop { animation: pop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; transform-box: fill-box; transform-origin: center; }
+
+@keyframes ripple {
+  0% { transform: scale(0.6); opacity: 0.55; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+.ripple { animation: ripple 2.2s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+
+@keyframes hop {
+  0%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-9px); }
+  60% { transform: translateY(-9px); }
+}
+.hop { animation: hop 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center bottom; }
+
+@keyframes twinkle {
+  0%, 100% { transform: scale(0.4); opacity: 0; }
+  50% { transform: scale(1); opacity: 1; }
+}
+.twinkle { animation: twinkle 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
