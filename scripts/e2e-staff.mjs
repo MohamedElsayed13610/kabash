@@ -199,8 +199,12 @@ try {
   } else {
     // mute
     await card.getByRole("button", { name: "كتم الصوت" }).click();
-    await page.waitForFunction((code) => !document.querySelector(`[data-order-code="${code}"] button`)?.textContent?.includes("كتم الصوت"), o1.code, { timeout: 8000 }).catch(() => {});
-    const [a1] = (await rest(`orders?id=eq.${o1.id}&select=acknowledged_at,acknowledged_by,status`)).body;
+    let a1;
+    for (let i = 0; i < 25; i++) { // wait for the acknowledge request to land
+      [a1] = (await rest(`orders?id=eq.${o1.id}&select=acknowledged_at,acknowledged_by,status`)).body;
+      if (a1.acknowledged_at) break;
+      await sleep(200);
+    }
     check("mute: order acknowledged by this cashier, status unchanged", !!a1.acknowledged_at && a1.acknowledged_by === cashier.id && a1.status === "new");
     check("alarm keeps ringing while another new order is unacknowledged", (await page.evaluate(() => window.__kabashAlarm.ringing)) === true);
     // accept the second order from the UI
@@ -240,6 +244,7 @@ try {
     const tr = await call("GET", `/api/track/${o1.code}`, null, { ip: "10.20.7.5" });
     check("customer's tracking API reflects the final price", tr.body?.totalFinal === Number(w1.total_final) && tr.body?.lines.some((l) => l.qtyFinal === 1.6));
     check("now it can go out for delivery", (await st(o1.id, "out_for_delivery")).status === 200);
+    const sumBefore = (await call("GET", "/api/staff/summary", null, { cookie })).body; // real orders may already count today
     check("delivered", (await st(o1.id, "delivered")).status === 200);
     check("a delivered order can't be changed -> 409", (await st(o1.id, "cancelled", "x")).status === 409);
 
@@ -251,9 +256,9 @@ try {
 
     // summary
     const sum = await call("GET", "/api/staff/summary", null, { cookie });
-    check("daily summary: counts, revenue = delivered final total, top items", sum.status === 200 && sum.body.delivered >= 1 && Math.abs(sum.body.revenue - Number(w1.total_final)) < 0.01 && sum.body.topItems.length > 0 && sum.body.cancelled >= 1, JSON.stringify({ orders: sum.body?.orders, delivered: sum.body?.delivered, revenue: sum.body?.revenue, cancelled: sum.body?.cancelled }));
+    check("daily summary: counts, revenue = delivered final total, top items", sum.status === 200 && sum.body.delivered === sumBefore.delivered + 1 && Math.abs(sum.body.revenue - sumBefore.revenue - Number(w1.total_final)) < 0.01 && sum.body.topItems.length > 0 && sum.body.cancelled === sumBefore.cancelled + 1, JSON.stringify({ orders: sum.body?.orders, delivered: sum.body?.delivered, revenue: sum.body?.revenue, cancelled: sum.body?.cancelled }));
     await page.locator("[data-tab=summary]").click();
-    check("summary tab renders", await page.getByTestId("summary").isVisible({ timeout: 8000 }).catch(() => false));
+    check("summary tab renders", await page.getByTestId("summary").waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
     await page.screenshot({ path: `${SHOTS}/staff-6-summary.png`, fullPage: true });
 
     // deactivated staff lose access immediately
