@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Hero } from "@/components/site/Hero";
 import { OpenBadge } from "@/components/site/OpenStatus";
-import { RecentOrders, TrackByCode } from "@/components/site/RecentOrders";
+import { TrackSection } from "@/components/site/TrackSection";
 import { ItemArt } from "@/components/ui/ItemArt";
 import { Reveal } from "@/components/ui/Reveal";
 import { Stamp } from "@/components/ui/Stamp";
@@ -35,7 +35,9 @@ export default async function Home() {
   return (
     <main>
       <Hero settings={settings} />
-      <RecentOrders />
+      <div className="pt-20">
+        <TrackSection />
+      </div>
 
       {/* offers */}
       {offers.length > 0 && (
@@ -201,7 +203,6 @@ export default async function Home() {
             </a>
           )}
         </Reveal>
-        <TrackByCode />
       </section>
     </main>
   );

@@ -5,6 +5,20 @@ import type { TrackingData, TrackingLine } from "@/lib/tracking-types";
 export const CODE_RE = /^[A-HJ-NP-Z2-9]{6}$/;
 const num = (v: unknown) => Number(v);
 
+export interface TrackingStatus {
+  code: string;
+  status: TrackingData["status"];
+  fulfillment: "delivery" | "pickup";
+  updatedAt: string;
+}
+
+/** Just the status of several orders (for the home page list and the floating chip). Same whitelist rules. */
+export async function getStatuses(codes: string[]): Promise<TrackingStatus[]> {
+  if (codes.length === 0) return [];
+  const { data } = await createSupabaseAdmin().from("orders").select("code, status, fulfillment, updated_at").in("code", codes);
+  return (data ?? []).map((o) => ({ code: o.code, status: o.status, fulfillment: o.fulfillment, updatedAt: o.updated_at }));
+}
+
 /**
  * Looks an order up by its tracking code and returns an explicit whitelist of fields.
  * Never add phone, name, address, notes, internal ids or staff ids here.

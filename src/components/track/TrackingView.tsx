@@ -226,7 +226,7 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
       failures.current = 0;
       setProblem(null);
       setData(next);
-      addRecentOrder(next.code, next.totalFinal ?? next.totalEstimate); // so it can be reopened from the home page
+      addRecentOrder(next.code, next.totalFinal ?? next.totalEstimate, { status: next.status, fulfillment: next.fulfillment }); // so it can be reopened from the home page
       if (lastStatus.current && lastStatus.current !== next.status) {
         navigator.vibrate?.([20, 40, 20]);
         setAnnounce(headline(next.status, next.fulfillment, next.etaMinutes).big);

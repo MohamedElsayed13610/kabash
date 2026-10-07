@@ -11,13 +11,18 @@ export function SiteHeader({ phone }: { phone: string }) {
           <Image src="/brand/logo.png" alt="" width={44} height={44} className="size-11" />
           <span className="font-display text-3xl leading-none">{ar.brand.name}</span>
         </Link>
-        <a
-          href={`tel:${phone}`}
-          className="grid h-11 min-w-11 place-items-center rounded-full border border-leaf/50 px-4 text-sm"
-          aria-label="اتصل بينا"
-        >
-          اتصل بينا
-        </a>
+        <div className="flex items-center gap-2">
+          <Link href="/track" className="grid h-11 place-items-center rounded-full bg-saffron px-4 text-sm font-bold text-charcoal">
+            تتبع طلبك
+          </Link>
+          <a
+            href={`tel:${phone}`}
+            className="grid h-11 min-w-11 place-items-center rounded-full border border-leaf/50 px-4 text-sm"
+            aria-label="اتصل بينا"
+          >
+            اتصل
+          </a>
+        </div>
       </div>
     </header>
   );

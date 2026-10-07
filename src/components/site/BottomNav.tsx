@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ar } from "@/messages/ar";
+import { useOrderStatus } from "./OrderStatusProvider";
 
 const stroke = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
@@ -36,6 +37,16 @@ const TABS = [
     ),
   },
   {
+    href: "/track",
+    label: "تتبع طلبك",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-6" aria-hidden {...stroke}>
+        <path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11z" />
+        <circle cx="12" cy="10" r="2.5" />
+      </svg>
+    ),
+  },
+  {
     href: "/offers",
     label: ar.nav.offers,
     icon: (
@@ -49,6 +60,7 @@ const TABS = [
 
 export function BottomNav() {
   const path = usePathname();
+  const { active } = useOrderStatus();
   if (path === "/checkout") return null; // the order button owns the bottom edge here
   return (
     <nav
@@ -57,18 +69,24 @@ export function BottomNav() {
     >
       <ul className="mx-auto flex max-w-xl">
         {TABS.map((t) => {
-          const active = t.href === "/" ? path === "/" : path.startsWith(t.href);
+          const on = t.href === "/" ? path === "/" : path.startsWith(t.href) || (t.href === "/track" && path.startsWith("/order/"));
+          const live = active.length;
           return (
             <li key={t.href} className="flex-1">
               <Link
                 href={t.href}
-                aria-current={active ? "page" : undefined}
+                aria-current={on ? "page" : undefined}
                 className={`flex h-[4.25rem] flex-col items-center justify-center gap-0.5 text-xs ${
-                  active ? "text-saffron" : "text-ivory/75"
+                  on ? "text-saffron" : "text-ivory/75"
                 }`}
               >
-                {t.icon}
-                <span className={active ? "font-bold" : ""}>{t.label}</span>
+                <span className="relative">
+                  {t.icon}
+                  {t.href === "/track" && live > 0 && (
+                    <span data-testid="track-badge" className="absolute -end-1 -top-0.5 size-3 rounded-full bg-ember ring-2 ring-forest-deep" aria-label={`${live} طلب شغال`} />
+                  )}
+                </span>
+                <span className={on ? "font-bold" : ""}>{t.label}</span>
               </Link>
             </li>
           );
