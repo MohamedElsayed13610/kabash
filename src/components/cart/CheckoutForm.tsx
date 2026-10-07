@@ -336,7 +336,9 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
             {totals.discountTotal > 0 && (
               <div className="flex justify-between text-forest">
                 <dt>الخصم</dt>
-                <dd className="tabular-nums">−{formatMoney(totals.discountTotal)} {ar.currency}</dd>
+                <dd className="tabular-nums">
+                  <span dir="ltr">−{formatMoney(totals.discountTotal)}</span> {ar.currency}
+                </dd>
               </div>
             )}
             {fulfillment === "delivery" && (

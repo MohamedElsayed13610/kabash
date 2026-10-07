@@ -134,11 +134,11 @@ function Summary({ data }: { data: TrackingData }) {
                     {l.variant ? ` · ${l.variant}` : ""}
                   </span>
                 </span>
-                <span className="tabular-nums">
+                <span className="inline-flex shrink-0 items-baseline gap-2 tabular-nums">
                   {isFinal ? (
                     <>
-                      <s className="me-2 text-sm text-charcoal/50">{formatMoney(l.lineEstimate)}</s>
                       <b className="text-forest">{formatMoney(l.lineFinal!)}</b>
+                      <s className="text-sm text-charcoal/50">{formatMoney(l.lineEstimate)}</s>
                     </>
                   ) : (
                     formatMoney(l.lineEstimate)
@@ -164,7 +164,9 @@ function Summary({ data }: { data: TrackingData }) {
         {data.discount > 0 && (
           <div className="flex justify-between text-forest">
             <dt>الخصم</dt>
-            <dd className="tabular-nums">−{formatMoney(data.discount)} {ar.currency}</dd>
+            <dd className="tabular-nums">
+              <span dir="ltr">−{formatMoney(data.discount)}</span> {ar.currency}
+            </dd>
           </div>
         )}
         {data.fulfillment === "delivery" && (
@@ -187,7 +189,7 @@ function Summary({ data }: { data: TrackingData }) {
           </div>
         )}
       </dl>
-      {data.hasButcher && final === null && !weighed && (
+      {data.hasButcher && final === null && !weighed && data.status !== "cancelled" && (
         <p className="mt-2 text-sm text-charcoal/70">{ar.butcher.estimateNote}</p>
       )}
       {final !== null && <p className="mt-2 text-sm text-charcoal/70">ده السعر بعد الوزن. الدفع كاش عند الاستلام.</p>}
@@ -320,7 +322,9 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
       <div className="mt-8">
         <Scene scene={sceneFor(data.status, data.fulfillment)} label={h.big} />
         <div className="mt-5 text-center" aria-live="polite">
-          <p className={`font-display text-4xl ${cancelled ? "text-charcoal" : "text-forest"}`}>{h.big}</p>
+          <p data-testid="headline" data-status={data.status} className={`font-display text-4xl ${cancelled ? "text-charcoal" : "text-forest"}`}>
+            {h.big}
+          </p>
           {!cancelled && <p className="mt-1 text-charcoal/75">{h.small}</p>}
         </div>
       </div>

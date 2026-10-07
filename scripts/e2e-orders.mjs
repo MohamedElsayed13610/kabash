@@ -92,9 +92,12 @@ try {
   check("line discounts sum to order discount", Math.abs(lines.reduce((s, l) => s + l.variant_snapshot.discount, 0) - 122) < 0.005);
   check("order_events has the first 'new' event", events.length === 1 && events[0].status === "new");
 
+  // Phase 4: the page itself never reads the order; the data comes only through the rate-limited tracking API.
   const page = await fetch(`${BASE}/order/${code1}`);
   const html = await page.text();
-  check("confirmation page shows the code and total", page.status === 200 && html.includes(code1) && html.includes("1,448"), page.status);
+  check("order page loads (200) without embedding order data", page.status === 200 && !html.includes("01099990") && !html.includes("شارع الاختبار"), page.status);
+  const tr = await fetch(`${BASE}/api/track/${code1}`, { headers: { "x-forwarded-for": "10.1.0.3" } }).then(async (r) => ({ status: r.status, body: await r.json() }));
+  check("tracking API returns the saved total (1,448) for the new order", tr.status === 200 && tr.body?.totalEstimate === expected.total && tr.body?.status === "new", `${tr.status} ${tr.body?.totalEstimate}`);
 
   // ---------- 2. tampering ----------
   console.log("\n== 2. Tampering ==");
