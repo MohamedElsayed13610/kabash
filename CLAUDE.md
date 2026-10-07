@@ -13,7 +13,7 @@ Next.js App Router + TypeScript, Tailwind v4 (logical properties only: `ms-*`, `
 - Sample data is flagged `is_sample`; show a "عينة" badge in the admin. No real phone numbers in the repo.
 
 ## Design: "الصينية" (the shared tray)
-- Tokens (CSS vars in `globals.css`): `--forest` anchor, `--ember` actions, `--saffron` prices/highlights, `--charcoal` text, `--ivory` ground, `--silver` thin lines. Ember is for fills with ivory text, not small text on ivory.
+- Tokens (CSS vars in `globals.css`): `--forest` anchor, `--ember` actions, `--saffron` prices/highlights, `--charcoal` text, `--ivory` ground, `--leaf` logo highlight green for rings and thin lines. Ember is for fills with ivory text, not small text on ivory.
 - Fonts: **Lalezar** (display: headlines, prices, never paragraphs) + **IBM Plex Sans Arabic** (body). Not Inter/Cairo.
 - Motifs: round tray shapes for categories, cart as a tray, ram emblem as a stamp, scale-style weight picker, "طازج النهارده" label, serving tags. Sadu/woven patterns only as thin dividers.
 - Avoid the AI look: purple gradients, glassmorphism, identical rounded cards everywhere, emoji icons, centered vague hero + two buttons, 3-column feature grids, lorem ipsum, side accent bars. Use asymmetry, big type, tight food crops, color blocks. Placeholders are color blocks with the item name in the display font, never gray boxes.

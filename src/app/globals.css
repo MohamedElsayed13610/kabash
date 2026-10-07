@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
-/* Palette: derived from the Kabash logo (to be re-checked against public/brand/logo.png) */
+/* Palette: sampled from the real logo and cover in public/brand */
 :root {
-  --forest: #0f3d2e;
-  --forest-deep: #0a2a20;
+  --forest: #0b5128; /* sampled from the cover, between #106432 and #01411f */
+  --forest-deep: #05301a;
   --ember: #c9460f; /* darkened from #e8591a so ivory text on it passes 4.5:1 */
   --ember-bright: #e8591a; /* flame accents only, never text on light */
   --saffron: #e2a93b;
   --charcoal: #1e1b18;
-  --ivory: #f6efe3;
-  --silver: #b9bec0;
+  --ivory: #f5f2e4; /* greenish cream, matches the logo lettering */
+  --leaf: #8fd16b; /* logo highlight green: rings, wordmark edge */
 }
 
 @theme inline {
@@ -20,7 +20,7 @@
   --color-saffron: var(--saffron);
   --color-charcoal: var(--charcoal);
   --color-ivory: var(--ivory);
-  --color-silver: var(--silver);
+  --color-leaf: var(--leaf);
   --font-display: var(--font-lalezar), system-ui, sans-serif;
   --font-body: var(--font-plex), system-ui, sans-serif;
 }

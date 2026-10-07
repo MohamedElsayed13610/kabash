@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description: "مندي ومدفون وبرياني ومضغوط وصواني ومشاوي، وجزارة لحوم ومصنعات فريش يوميًا. بني مزار – طريق الساحة – أمام كوب.",
 };
 
-export const viewport: Viewport = { themeColor: "#0f3d2e", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#0b5128", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
