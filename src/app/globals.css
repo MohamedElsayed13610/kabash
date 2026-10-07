@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Palette: derived from the Kabash logo (to be re-checked against public/brand/logo.png) */
+:root {
+  --forest: #0f3d2e;
+  --forest-deep: #0a2a20;
+  --ember: #c9460f; /* darkened from #e8591a so ivory text on it passes 4.5:1 */
+  --ember-bright: #e8591a; /* flame accents only, never text on light */
+  --saffron: #e2a93b;
+  --charcoal: #1e1b18;
+  --ivory: #f6efe3;
+  --silver: #b9bec0;
+}
+
+@theme inline {
+  --color-forest: var(--forest);
+  --color-forest-deep: var(--forest-deep);
+  --color-ember: var(--ember);
+  --color-ember-bright: var(--ember-bright);
+  --color-saffron: var(--saffron);
+  --color-charcoal: var(--charcoal);
+  --color-ivory: var(--ivory);
+  --color-silver: var(--silver);
+  --font-display: var(--font-lalezar), system-ui, sans-serif;
+  --font-body: var(--font-plex), system-ui, sans-serif;
+}
+
+html {
+  background: var(--ivory);
+  color: var(--charcoal);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  line-height: 1.7;
+  min-height: 100dvh;
+}
+
+:focus-visible {
+  outline: 3px solid var(--saffron);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
