@@ -123,7 +123,7 @@ export default async function SlipPage({
           )}
           <div className="flex items-baseline justify-between border-t border-black pt-1 text-[1.25em] font-bold">
             <dt>{final !== null ? "الإجمالي" : "الإجمالي (تقديري)"}</dt>
-            <dd dir="ltr">
+            <dd>
               {formatMoney(final ?? o.total_estimate)} {ar.currency}
             </dd>
           </div>
