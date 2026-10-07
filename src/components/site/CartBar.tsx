@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, animate } from "motion/react";
 import { useCart, type Flight } from "../cart/CartProvider";
 import { BottomSheet } from "../ui/BottomSheet";
@@ -104,6 +106,13 @@ function CartSheet() {
             <p className="mt-1 text-sm text-charcoal/65">
               {hasButcher ? ar.butcher.estimateNote : "رسوم التوصيل بتتحسب في الخطوة الجاية."}
             </p>
+            <Link
+              href="/checkout"
+              onClick={() => setSheetOpen(false)}
+              className="mt-4 grid h-14 place-items-center rounded-full bg-ember font-display text-2xl text-ivory"
+            >
+              كمّل الطلب
+            </Link>
           </div>
         )}
       </div>
@@ -113,7 +122,8 @@ function CartSheet() {
 
 export function CartBar() {
   const { lines, count, subtotal, bump, flights, cartTarget, setSheetOpen, hydrated } = useCart();
-  const show = hydrated && count > 0;
+  const path = usePathname();
+  const show = hydrated && count > 0 && path !== "/checkout";
 
   return (
     <>

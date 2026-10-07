@@ -19,3 +19,12 @@ Next.js App Router + TypeScript, Tailwind v4 (logical properties only: `ms-*`, `
 - Avoid the AI look: purple gradients, glassmorphism, identical rounded cards everywhere, emoji icons, centered vague hero + two buttons, 3-column feature grids, lorem ipsum, side accent bars. Use asymmetry, big type, tight food crops, color blocks. Placeholders are color blocks with the item name in the display font, never gray boxes.
 - Motion: few, well-made moments. Animate `transform`/`opacity` only. Respect `prefers-reduced-motion`. Content must be visible at rest (no JS-gated hiding).
 - Mobile first: 360px, 44px+ tap targets, bottom-reachable primary actions, cheap Android on mobile data.
+
+## Order pricing rules (src/lib/pricing/order.ts, tested)
+- Server recomputes everything from DB rows; the client sends only item ids, variant/extra ids and quantities. Unknown fields are stripped by Zod.
+- Per cart line: at most ONE item/category offer (the best). A fixed amount applies once per line, capped at the line total.
+- At most ONE cart offer (the best), applied after line offers and split across lines by net amount.
+- Zone minimum and free-delivery threshold are judged on the goods total after discounts. Pickup never pays a fee.
+- Each line's discount (incl. its share of any cart offer) is snapshotted in `order_items.variant_snapshot.discount` so Phase 5 can recompute butcher finals.
+- Rate limits (DB-backed, `rate_limit_hit`): orders 30/10min per IP (carrier NAT shares IPs), 3/10min per phone; quotes 60/min per IP.
+- Run `node --env-file=.env.local scripts/e2e-orders.mjs` (dev server up) to re-test orders and abuse cases. It cleans up after itself.

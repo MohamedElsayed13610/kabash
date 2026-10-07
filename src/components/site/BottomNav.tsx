@@ -49,6 +49,7 @@ const TABS = [
 
 export function BottomNav() {
   const path = usePathname();
+  if (path === "/checkout") return null; // the order button owns the bottom edge here
   return (
     <nav
       aria-label="التنقل"
