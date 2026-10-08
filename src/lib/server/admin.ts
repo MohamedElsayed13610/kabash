@@ -1,5 +1,6 @@
 import "server-only";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { PUBLIC_TAGS } from "@/lib/data";
 import { NextResponse } from "next/server";
 import type { ZodType } from "zod";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
@@ -14,6 +15,8 @@ export const db = () => createSupabaseAdmin();
 
 /** Public pages are cached for a minute; after an admin change, refresh them right away. */
 export function revalidatePublic() {
+  // expire: 0 = never serve the old copy; the next visitor gets fresh data straight away
+  for (const t of PUBLIC_TAGS) revalidateTag(t, { expire: 0 });
   for (const p of ["/", "/menu", "/butcher", "/offers", "/checkout"]) revalidatePath(p);
 }
 

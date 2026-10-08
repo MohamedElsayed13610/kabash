@@ -10,7 +10,7 @@ import { formatClock, formatMoney, price } from "@/lib/format";
 import { startingPrice } from "@/lib/pricing/unit";
 import { ar } from "@/messages/ar";
 
-export const revalidate = 60;
+export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
 
 const DAYS = ["الأحد", "الإتنين", "التلات", "الأربع", "الخميس", "الجمعة", "السبت"];
 const OFFER_BLOCKS = ["bg-saffron text-charcoal", "bg-ember text-ivory", "bg-forest text-ivory"];

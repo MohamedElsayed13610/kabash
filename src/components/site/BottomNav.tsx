@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { ar } from "@/messages/ar";
 import { useOrderStatus } from "./OrderStatusProvider";
 
@@ -60,7 +61,16 @@ const TABS = [
 
 export function BottomNav() {
   const path = usePathname();
+  const router = useRouter();
   const { active } = useOrderStatus();
+
+  // Warm up every page the bar leads to as soon as the browser is idle, so a tap is instant even on a slow connection.
+  useEffect(() => {
+    const warm = () => TABS.forEach((t) => router.prefetch(t.href));
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void) => number }).requestIdleCallback;
+    if (idle) idle(warm);
+    else setTimeout(warm, 800);
+  }, [router]);
   if (path === "/checkout") return null; // the order button owns the bottom edge here
   return (
     <nav

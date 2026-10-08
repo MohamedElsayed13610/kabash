@@ -3,7 +3,7 @@ import { SiteHeader } from "@/components/site/SiteHeader";
 import { TrackSection } from "@/components/site/TrackSection";
 import { getSettings } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
 export const metadata: Metadata = {
   title: "تتبع طلبك | كباش",
   description: "تابع طلبك من كباش لحظة بلحظة، من التحضير لحد ما يوصلك.",

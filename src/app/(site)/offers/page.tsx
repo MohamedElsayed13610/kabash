@@ -8,7 +8,7 @@ import { getOffers, getSettings } from "@/lib/data";
 import { formatMoney } from "@/lib/format";
 import { ar } from "@/messages/ar";
 
-export const revalidate = 60;
+export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
 export const metadata: Metadata = {
   title: "العروض | كباش",
   description: "عروض كباش الحالية على المندي والجزارة وطلبات التوصيل.",

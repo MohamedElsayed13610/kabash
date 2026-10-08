@@ -5,7 +5,7 @@ import { MenuView } from "@/components/menu/MenuView";
 import { PageIntro } from "@/components/menu/PageIntro";
 import { getMenu, getOffers, getSettings } from "@/lib/data";
 
-export const revalidate = 60;
+export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
 export const metadata: Metadata = {
   title: "الجزارة | كباش",
   description: "لحوم ومصنعات فريش كل يوم. اطلب بالكيلو واحنا نقطع ونوزن على طلبك.",
