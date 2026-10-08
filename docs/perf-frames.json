@@ -1,0 +1,27 @@
+{
+  "label": "phase7 4x CPU",
+  "at": "2026-10-08T07:54:11.103Z",
+  "pages": {
+    "home idle (hero animating)": {
+      "frames": 361,
+      "p50": 7,
+      "p95": 14,
+      "worst": 34,
+      "slowFramesPct": 0
+    },
+    "home scroll": {
+      "frames": 298,
+      "p50": 7,
+      "p95": 22,
+      "worst": 71,
+      "slowFramesPct": 2
+    },
+    "menu scroll": {
+      "frames": 415,
+      "p50": 7,
+      "p95": 14,
+      "worst": 77,
+      "slowFramesPct": 1
+    }
+  }
+}

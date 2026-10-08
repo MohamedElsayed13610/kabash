@@ -53,7 +53,7 @@ export function AdminShell({ staff, children }: { staff: { name: string; role: R
               </span>
             </Link>
             <div className="flex items-center gap-2">
-              <Link href="/staff" className="grid h-11 place-items-center rounded-full border border-leaf/50 px-4 text-sm">
+              <Link href="/staff" data-testid="to-board" className="grid h-11 place-items-center rounded-full border border-leaf/50 px-4 text-sm">
                 الطلبات
               </Link>
               <button onClick={logout} className="h-11 rounded-full border border-leaf/50 px-4 text-sm">
