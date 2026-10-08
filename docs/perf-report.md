@@ -66,3 +66,13 @@ Throttled phone (4x CPU slowdown, ~Fast 3G), medians of 3 interleaved runs, orig
 ### Found while measuring
 A site-wide `loading.tsx` skeleton **doubled** main-thread blocking time on `/menu` and `/butcher` (about 1,100-1,700 ms vs 510 ms). It was removed.
 Loading the animation library lazily made no measurable difference, so it is bundled normally.
+
+## Animation check (final build, 4x CPU slowdown, phone viewport)
+
+| Scenario | Frames | Median frame | p95 | Frames slower than 30 fps |
+|---|---|---|---|---|
+| Home, idle (hero steam/embers running) | 361 | 7 ms | 14 ms | 0% |
+| Home, scrolling | 298 | 7 ms | 22 ms | 2% |
+| Menu, scrolling | 415 | 7 ms | 14 ms | 1% |
+
+Everything animated is `transform`/`opacity` only, so no further tuning was needed. With "reduce motion" switched on, every CSS animation collapses to ~0 ms and the motion library follows the same setting (`MotionConfig reducedMotion="user"`).
