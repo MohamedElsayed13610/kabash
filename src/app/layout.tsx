@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Lalezar, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
 import { MotionProvider } from "@/components/ui/MotionProvider";
+import { OfflineBanner } from "@/components/site/OfflineBanner";
 
 const display = Lalezar({
   subsets: ["arabic", "latin"],
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="ar" dir="rtl" className={`${display.variable} ${body.variable}`}>
       <body>
         <MotionProvider>{children}</MotionProvider>
+        <OfflineBanner />
       </body>
     </html>
   );
