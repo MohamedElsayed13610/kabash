@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import { Scene, type SceneKey } from "./Scene";
 import { RollingNumber } from "../ui/RollingNumber";
 import { isTerminal, stageOf, type OrderStatus, type TrackingData } from "@/lib/tracking-types";
@@ -72,7 +72,7 @@ function Timeline({ data }: { data: TrackingData }) {
     <ol className="relative mt-8" aria-label="مراحل الطلب">
       {/* the track, and the fill that grows as the order moves */}
       <span aria-hidden className="absolute bottom-5 start-[1.05rem] top-5 w-1 rounded-full bg-charcoal/15" />
-      <motion.span
+      <m.span
         aria-hidden
         className="absolute start-[1.05rem] top-5 bottom-5 w-1 origin-top rounded-full bg-forest"
         initial={false}
@@ -85,7 +85,7 @@ function Timeline({ data }: { data: TrackingData }) {
         const at = timeFor(k);
         return (
           <li key={s.title} className="relative flex items-start gap-4 pb-7 last:pb-0" aria-current={current ? "step" : undefined}>
-            <motion.span
+            <m.span
               initial={false}
               animate={{ scale: current ? 1.15 : 1 }}
               transition={{ type: "spring", damping: 12, stiffness: 300 }}
@@ -101,7 +101,7 @@ function Timeline({ data }: { data: TrackingData }) {
                 k + 1
               )}
               {current && <span aria-hidden className="ripple absolute inset-0 rounded-full border-2 border-ember" />}
-            </motion.span>
+            </m.span>
             <div className="pt-1">
               <p className={`font-display text-2xl leading-tight ${done || current ? "text-charcoal" : "text-charcoal/45"}`}>{s.title}</p>
               {k === 0 && s.sub && (stage >= 0) && (

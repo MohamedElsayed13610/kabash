@@ -22,9 +22,11 @@ export function Hero({ settings }: { settings: SiteSettings }) {
   return (
     <section className="relative overflow-hidden bg-forest text-ivory">
       {/* soft flame glow behind the tray */}
+      {/* flame glow: a gradient, not a blur filter (filters are expensive on cheap phones) */}
       <div
         aria-hidden
-        className="absolute -bottom-24 start-1/2 size-[28rem] -translate-x-1/2 rounded-full bg-ember-bright/25 blur-3xl rtl:translate-x-1/2"
+        className="absolute -bottom-32 start-1/2 size-[34rem] -translate-x-1/2 rounded-full rtl:translate-x-1/2"
+        style={{ background: "radial-gradient(closest-side, rgba(232,89,26,0.28), rgba(232,89,26,0) 100%)" }}
       />
       <div className="relative mx-auto max-w-xl px-5 pt-5">
         <div className="flex items-center justify-between">
@@ -64,8 +66,8 @@ export function Hero({ settings }: { settings: SiteSettings }) {
             {WISPS.map((w) => (
               <span
                 key={w.left}
-                className="steam absolute bottom-24 h-24 w-10 rounded-full bg-ivory/30 blur-xl"
-                style={{ left: w.left, animationDelay: w.delay }}
+                className="steam absolute bottom-24 h-24 w-12 rounded-full"
+                style={{ left: w.left, animationDelay: w.delay, background: "radial-gradient(closest-side, rgba(245,242,228,0.38), rgba(245,242,228,0) 100%)" }}
               />
             ))}
             {SPARKS.map((s) => (

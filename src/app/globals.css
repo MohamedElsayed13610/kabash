@@ -149,3 +149,9 @@ body {
   50% { transform: scale(1); opacity: 1; }
 }
 .twinkle { animation: twinkle 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+
+/* Sections below the first screen are not laid out or painted until they are near the viewport. */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}

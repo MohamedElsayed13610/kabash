@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion, useDragControls } from "motion/react";
+import { AnimatePresence, useDragControls } from "motion/react";
+import * as m from "motion/react-m";
 
 interface Props {
   open: boolean;
@@ -38,7 +39,7 @@ export function BottomSheet({ open, onClose, label, children }: Props) {
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
-          <motion.div
+          <m.div
             className="absolute inset-0 bg-forest-deep/70"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -46,7 +47,7 @@ export function BottomSheet({ open, onClose, label, children }: Props) {
             onClick={onClose}
             aria-hidden
           />
-          <motion.div
+          <m.div
             ref={panel}
             tabIndex={-1}
             role="dialog"
@@ -75,7 +76,7 @@ export function BottomSheet({ open, onClose, label, children }: Props) {
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-[max(1rem,env(safe-area-inset-bottom))]">
               {children}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       )}
     </AnimatePresence>,

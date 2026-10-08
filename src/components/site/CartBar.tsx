@@ -1,15 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, animate } from "motion/react";
+import { AnimatePresence, animate } from "motion/react";
+import * as m from "motion/react-m";
 import { useCart, type Flight } from "../cart/CartProvider";
-import { BottomSheet } from "../ui/BottomSheet";
 import { RollingNumber } from "../ui/RollingNumber";
 import { ar } from "@/messages/ar";
-import { formatKg, formatMoney } from "@/lib/format";
-import { lineTotal } from "@/lib/pricing/unit";
+import { formatMoney } from "@/lib/format";
+
+const CartSheet = dynamic(() => import("./CartSheet").then((m) => m.CartSheet), { ssr: false });
 
 /** A small ember dot that travels from the tapped button into the cart bar. */
 function FlyingDot({ flight }: { flight: Flight }) {
@@ -43,87 +44,14 @@ function FlyingDot({ flight }: { flight: Flight }) {
   );
 }
 
-function CartSheet() {
-  const { lines, subtotal, setQty, remove, sheetOpen, setSheetOpen } = useCart();
-  const hasButcher = lines.some((l) => l.unit === "kg");
-
-  return (
-    <BottomSheet open={sheetOpen} onClose={() => setSheetOpen(false)} label="الصينية">
-      <div className="px-5 pb-4">
-        <h2 className="font-display text-3xl text-forest">الصينية بتاعتك</h2>
-        {lines.length === 0 ? (
-          <p className="py-10 text-center text-charcoal/70">الصينية فاضية. اختار من المنيو وانت تملاها.</p>
-        ) : (
-          <ul className="mt-3 divide-y divide-charcoal/10">
-            {lines.map((l) => (
-              <li key={l.key} className="flex items-center gap-3 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="font-display text-xl leading-tight">{l.name}</p>
-                  {(l.variantName || l.extraNames.length > 0) && (
-                    <p className="text-sm text-charcoal/65">
-                      {[l.variantName, ...l.extraNames].filter(Boolean).join(" · ")}
-                    </p>
-                  )}
-                  <p className="mt-0.5 font-display text-lg text-ember">
-                    {formatMoney(lineTotal(l.unitPrice, l.qty))} {ar.currency}
-                    {l.unit === "kg" && <span className="ms-1 font-body text-xs text-charcoal/60">تقديري</span>}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={() => setQty(l.key, l.qty - l.step < l.min - 1e-9 ? 0 : l.qty - l.step)}
-                    className="grid size-11 place-items-center rounded-full border border-charcoal/20 text-xl"
-                    aria-label={l.qty - l.step < l.min - 1e-9 ? `إزالة ${l.name}` : `تقليل ${l.name}`}
-                  >
-                    {l.qty - l.step < l.min - 1e-9 ? "×" : "−"}
-                  </button>
-                  <span className="min-w-12 text-center font-medium tabular-nums">
-                    {l.unit === "kg" ? formatKg(l.qty) : l.qty}
-                  </span>
-                  <button
-                    onClick={() => setQty(l.key, l.qty + l.step)}
-                    className="grid size-11 place-items-center rounded-full bg-forest text-xl text-ivory"
-                    aria-label={`زيادة ${l.name}`}
-                  >
-                    +
-                  </button>
-                </div>
-                <button onClick={() => remove(l.key)} className="sr-only">
-                  إزالة {l.name}
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
-        {lines.length > 0 && (
-          <div className="mt-2 border-t-2 border-dashed border-charcoal/20 pt-4">
-            <div className="flex items-baseline justify-between">
-              <span>إجمالي الأصناف</span>
-              <span className="font-display text-3xl text-forest">
-                {formatMoney(subtotal)} {ar.currency}
-              </span>
-            </div>
-            <p className="mt-1 text-sm text-charcoal/65">
-              {hasButcher ? ar.butcher.estimateNote : "رسوم التوصيل بتتحسب في الخطوة الجاية."}
-            </p>
-            <Link
-              href="/checkout"
-              onClick={() => setSheetOpen(false)}
-              className="mt-4 grid h-14 place-items-center rounded-full bg-ember font-display text-2xl text-ivory"
-            >
-              كمّل الطلب
-            </Link>
-          </div>
-        )}
-      </div>
-    </BottomSheet>
-  );
-}
-
 export function CartBar() {
-  const { lines, count, subtotal, bump, flights, cartTarget, setSheetOpen, hydrated } = useCart();
+  const { lines, count, subtotal, bump, flights, cartTarget, sheetOpen, setSheetOpen, hydrated } = useCart();
   const path = usePathname();
   const show = hydrated && count > 0 && path !== "/checkout";
+  const [opened, setOpened] = useState(false); // load the sheet code on first open, keep it for the exit animation
+  useEffect(() => {
+    if (sheetOpen) setOpened(true);
+  }, [sheetOpen]);
 
   return (
     <>
@@ -132,7 +60,7 @@ export function CartBar() {
       ))}
       <AnimatePresence>
         {show && (
-          <motion.div
+          <m.div
             className="fixed inset-x-0 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] z-30 mx-auto max-w-xl px-3"
             initial={{ y: 80, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -146,7 +74,7 @@ export function CartBar() {
               aria-label={`افتح الصينية، ${count} صنف`}
             >
               <span className="flex items-center gap-3">
-                <motion.span
+                <m.span
                   key={bump}
                   initial={{ scale: 1.5 }}
                   animate={{ scale: 1 }}
@@ -154,15 +82,15 @@ export function CartBar() {
                   className="grid size-10 place-items-center rounded-full bg-ivory font-display text-xl text-ember"
                 >
                   {count}
-                </motion.span>
+                </m.span>
                 <span className="font-display text-xl">{ar.nav.cart}</span>
               </span>
               <RollingNumber value={formatMoney(subtotal)} className="font-display text-2xl" />
             </button>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
-      <CartSheet />
+      {(sheetOpen || opened) && <CartSheet />}
       <span className="sr-only" aria-live="polite">
         {lines.length > 0 ? `في الصينية ${count} صنف` : ""}
       </span>

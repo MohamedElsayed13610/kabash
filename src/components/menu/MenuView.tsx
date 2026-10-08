@@ -1,17 +1,20 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import type { Category, Item, Offer } from "@/lib/types";
 import { useCart } from "../cart/CartProvider";
 import { ItemArt } from "../ui/ItemArt";
 import { Stamp } from "../ui/Stamp";
-import { ItemSheet } from "./ItemSheet";
+import dynamic from "next/dynamic";
 import { ar } from "@/messages/ar";
 import { formatMoney, price } from "@/lib/format";
 import { startingPrice, unitPrice } from "@/lib/pricing/unit";
 
 type Kind = "restaurant" | "butcher";
+
+// The item sheet (and the weight scale inside it) is fetched the first time someone opens an item.
+const ItemSheet = dynamic(() => import("./ItemSheet").then((x) => x.ItemSheet), { ssr: false });
 
 function offerBadge(o: Offer) {
   return o.discount_type === "percent" ? `خصم ${o.discount_value}%` : `خصم ${formatMoney(o.discount_value)} ${ar.currency}`;
@@ -50,7 +53,7 @@ function CategoryNav({ categories, active, onPick }: { categories: Category[]; a
               className={`relative h-11 shrink-0 rounded-full px-5 font-medium transition-colors ${on ? "text-ivory" : "text-forest"}`}
             >
               {on && (
-                <motion.span
+                <m.span
                   layoutId="chip-indicator"
                   className="absolute inset-0 rounded-full bg-forest"
                   transition={{ type: "spring", damping: 28, stiffness: 380 }}
@@ -266,7 +269,7 @@ export function MenuView({ categories, kind, offers }: { categories: Category[];
         ))}
         <div className="h-28" />
       </div>
-      <ItemSheet item={selected?.item ?? null} artIndex={selected?.index ?? 0} open={open} onClose={() => setOpen(false)} />
+      {selected && <ItemSheet item={selected.item} artIndex={selected.index} open={open} onClose={() => setOpen(false)} />}
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 
 type SceneKey = "received" | "preparing" | "delivery" | "pickup" | "delivered" | "cancelled";
 
@@ -170,7 +171,7 @@ export function Scene({ scene, label }: { scene: SceneKey; label: string }) {
       }`}
     >
       <AnimatePresence mode="wait" initial={false}>
-        <motion.svg
+        <m.svg
           key={scene}
           viewBox="0 0 240 240"
           className="absolute inset-0 size-full"
@@ -181,7 +182,7 @@ export function Scene({ scene, label }: { scene: SceneKey; label: string }) {
           aria-hidden
         >
           <Current />
-        </motion.svg>
+        </m.svg>
       </AnimatePresence>
     </div>
   );

@@ -41,7 +41,7 @@ export default async function Home() {
 
       {/* offers */}
       {offers.length > 0 && (
-        <section className="mx-auto max-w-xl pt-20" aria-labelledby="offers-h">
+        <section className="cv-auto mx-auto max-w-xl pt-20" aria-labelledby="offers-h">
           <Reveal className="flex items-baseline justify-between px-5">
             <h2 id="offers-h" className="font-display text-4xl text-forest">
               عروض النهارده
@@ -69,7 +69,7 @@ export default async function Home() {
       )}
 
       {/* restaurant highlights */}
-      <section className="mx-auto max-w-xl px-5 pt-16" aria-labelledby="dishes-h">
+      <section className="cv-auto mx-auto max-w-xl px-5 pt-16" aria-labelledby="dishes-h">
         <Reveal>
           <h2 id="dishes-h" className="font-display text-4xl text-forest">
             صواني الكباش
@@ -105,7 +105,7 @@ export default async function Home() {
       </section>
 
       {/* butcher */}
-      <section className="mt-20 bg-forest-deep py-14 text-ivory" aria-labelledby="butcher-h">
+      <section className="cv-auto mt-20 bg-forest-deep py-14 text-ivory" aria-labelledby="butcher-h">
         <div className="mx-auto max-w-xl px-5">
           <Reveal>
             <Stamp label={ar.butcher.fresh} className="!border-saffron !text-saffron" />
@@ -138,7 +138,7 @@ export default async function Home() {
       </section>
 
       {/* how to order */}
-      <section className="mx-auto max-w-xl px-5 pt-16" aria-labelledby="how-h">
+      <section className="cv-auto mx-auto max-w-xl px-5 pt-16" aria-labelledby="how-h">
         <Reveal>
           <h2 id="how-h" className="font-display text-4xl text-forest">
             إزاي تطلب
@@ -160,7 +160,7 @@ export default async function Home() {
       </section>
 
       {/* find us */}
-      <section className="mx-auto max-w-xl px-5 pt-16 pb-10" aria-labelledby="find-h">
+      <section className="cv-auto mx-auto max-w-xl px-5 pt-16 pb-10" aria-labelledby="find-h">
         <Reveal>
           <h2 id="find-h" className="font-display text-4xl text-forest">
             تلاقينا فين

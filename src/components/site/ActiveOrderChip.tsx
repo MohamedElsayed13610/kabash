@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { useOrderStatus } from "./OrderStatusProvider";
 import { useCart } from "../cart/CartProvider";
 import { statusLabel } from "@/lib/tracking-labels";
@@ -38,7 +39,7 @@ export function ActiveOrderChip() {
   return (
     <AnimatePresence>
       {show && latest && (
-        <motion.div
+        <m.div
           key="chip"
           data-testid="active-order-chip"
           className="fixed inset-x-0 z-30 mx-auto flex max-w-xl justify-center px-3"
@@ -54,17 +55,17 @@ export function ActiveOrderChip() {
                 <span className="ripple absolute inset-0 rounded-full border-2 border-saffron" />
                 <span className="size-2 rounded-full bg-saffron" />
               </span>
-              <motion.span key={latest.status} initial={{ scale: 1.08 }} animate={{ scale: 1 }} className="font-medium">
+              <m.span key={latest.status} initial={{ scale: 1.08 }} animate={{ scale: 1 }} className="font-medium">
                 {statusLabel(latest.status, latest.fulfillment)}
                 {active.length > 1 ? ` (+${active.length - 1})` : ""}
-              </motion.span>
+              </m.span>
               <span className="rounded-full bg-saffron px-3 py-1 text-sm font-bold text-charcoal">تتبع</span>
             </Link>
             <button onClick={() => setDismissed(key)} aria-label="إخفاء" className="grid size-11 place-items-center rounded-full text-ivory/70">
               ×
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

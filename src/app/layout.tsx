@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Lalezar, IBM_Plex_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import { MotionProvider } from "@/components/ui/MotionProvider";
 
 const display = Lalezar({
   subsets: ["arabic", "latin"],
@@ -26,7 +27,9 @@ export const viewport: Viewport = { themeColor: "#0b5128", width: "device-width"
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar" dir="rtl" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   );
 }
