@@ -49,7 +49,7 @@ try {
     const heroSection = hero.closest("section");
     return { heroBottom: heroSection.getBoundingClientRect().bottom + scrollY, track: top(document.querySelector("[data-testid=track-section]")), offers: top([...document.querySelectorAll("h2")].find((h) => h.textContent.includes("عروض"))), dishes: top([...document.querySelectorAll("h2")].find((h) => h.textContent.includes("صواني الكباش"))), vh: innerHeight };
   });
-  check("placed right after the hero, above offers and dishes", pos.track >= pos.heroBottom - 1 && pos.track < (pos.offers ?? pos.dishes) && pos.track < pos.dishes, JSON.stringify(pos));
+  check("placed right after the hero, above offers and dishes", pos.track >= pos.heroBottom - 1 && pos.track < (Number.isFinite(pos.offers) ? pos.offers : pos.dishes) && pos.track < pos.dishes, JSON.stringify(pos));
   check("empty state text + code field", (await page.getByText("أول ما تطلب هتلاقي طلبك هنا").isVisible()) && (await page.locator("#track-code").isVisible()));
   const tabs = await page.locator("nav[aria-label=التنقل] a").allInnerTexts();
   check("bottom bar has the 'تتبع طلبك' tab (5 tabs)", tabs.length === 5 && tabs.some((t) => t.includes("تتبع طلبك")), tabs.join(" | "));

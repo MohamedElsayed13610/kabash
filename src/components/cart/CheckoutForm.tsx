@@ -300,10 +300,10 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
         </Field>
         <div>
           <p className="mb-1 font-medium">الدفع</p>
-          <label className="flex h-14 items-center gap-3 rounded-xl border-2 border-forest bg-forest/5 px-4">
-            <input type="radio" checked readOnly aria-label="كاش عند الاستلام" className="size-5 accent-forest" />
+          <div className="flex h-14 items-center gap-3 rounded-xl border-2 border-forest bg-forest/5 px-4">
+            <span aria-hidden className="size-5 shrink-0 rounded-full border-[6px] border-forest bg-ivory" />
             <span>كاش عند الاستلام</span>
-          </label>
+          </div>
         </div>
       </section>
 

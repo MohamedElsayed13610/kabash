@@ -59,6 +59,17 @@ let created = [];
 try {
   await resetLimits();
 
+  // The totals below assume the two sample offers (10% on mandi, 30 EGP off the cart). If the owner has removed them,
+  // bring our own, tagged for cleanup, so this test never depends on what the owner keeps in the dashboard.
+  const liveOffers = (await rest("offers?select=id&active=eq.true")).body ?? [];
+  if (liveOffers.length === 0) {
+    await rest("offers", { method: "POST", body: JSON.stringify([
+      { title_ar: `خصم ١٠٪ ${MARK}`, discount_type: "percent", discount_value: 10, target_type: "category", target_id: mandi.category_id, active: true, is_sample: false },
+      { title_ar: `وفّر ٣٠ ${MARK}`, discount_type: "fixed", discount_value: 30, target_type: "cart", active: true, is_sample: false },
+    ]) });
+    console.log("No active offers in the dashboard: using two temporary test offers.\n");
+  }
+
   // ---------- 1. full order ----------
   console.log("== 1. Full order: mandi (size+2 extras) x2, butcher 1.5kg, delivery zone, offers ==");
   // expected, computed by hand from the seed: mandi large 430 + 15 + 15 = 460 x2 = 920; kandoz 420 x 1.5 = 630
@@ -237,6 +248,7 @@ try {
   }
   await rest(`delivery_zones?id=eq.${zone2.id}`, { method: "PATCH", body: JSON.stringify({ fee: zone2.fee, min_order: zone2.min_order, active: zone2.active }) });
   await rest(`items?id=eq.${chicken.id}`, { method: "PATCH", body: JSON.stringify({ available: true }) });
+  await rest(`offers?title_ar=like.${encodeURIComponent(`*${MARK}*`)}`, { method: "DELETE" });
   const del = await rest(`orders?customer_name=eq.${encodeURIComponent(MARK)}`, { method: "DELETE" });
   await resetLimits();
   console.log(`\nCleanup: deleted ${del.body?.length ?? 0} test orders (items/events cascade), settings restored, rate limits cleared.`);

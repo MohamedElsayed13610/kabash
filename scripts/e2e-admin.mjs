@@ -59,7 +59,7 @@ async function login(ctx, u) {
   await page.fill("#email", u.email);
   await page.fill("#password", u.password);
   await page.click("button[type=submit]");
-  await page.waitForURL("**/staff", { timeout: 25000 });
+  await page.waitForURL((u) => /^\/(staff|admin)\/?$/.test(u.pathname), { timeout: 25000 }); // owner/manager land on /admin, cashier on /staff
   return page;
 }
 const toast = (page, text, ms = 12000) => page.getByRole("status").filter({ hasText: text }).first().waitFor({ timeout: ms }).then(() => true).catch(() => false);

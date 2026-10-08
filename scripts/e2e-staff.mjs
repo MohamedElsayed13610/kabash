@@ -112,7 +112,7 @@ try {
   const jsErrors = [];
   page.on("pageerror", (e) => jsErrors.push(e.message));
   await login(page, cashier);
-  await page.waitForURL("**/staff", { timeout: 20000 });
+  await page.waitForURL((u) => /^\/(staff|admin)\/?$/.test(u.pathname), { timeout: 20000 }); // cashier -> /staff, owner/manager -> /admin
   check("cashier signs in and reaches the board", await page.getByText("الطلبات", { exact: true }).first().isVisible({ timeout: 15000 }));
   check("realtime connects ('مباشر')", await page.locator("[data-testid=live][data-live=true]").waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
   check("sound button shown until tapped", await page.getByTestId("enable-sound").isVisible());
@@ -159,6 +159,7 @@ try {
     await sp.goto(`${BASE}/staff/orders/${o1.id}/slip?w=${w}`, { waitUntil: "domcontentloaded" });
     await sp.emulateMedia({ media: "print" });
     const html = await sp.content();
+    await sp.locator(".slip").waitFor();
     const box = await sp.locator(".slip").boundingBox();
     const expectPx = (w * 96) / 25.4;
     check(`${w}mm slip: @page size and rendered width`, html.includes(`size: ${w}mm auto`) && Math.abs(box.width - expectPx) < 8, `${Math.round(box.width)}px vs ${Math.round(expectPx)}px`);
@@ -286,7 +287,7 @@ try {
     check("subscribing twice keeps ONE row", (await rest(`push_subscriptions?endpoint=eq.${encodeURIComponent(s1.endpoint)}&select=id`)).body.length === 1);
     check("non-https endpoint is rejected", (await call("POST", "/api/staff/push/subscribe", { subscription: { ...s1, endpoint: "http://evil.example/x" } }, { cookie })).status === 400);
     const other = await mkUser("other", { role: "manager" });
-    const oc = await newCtx(); const op = await oc.newPage(); await login(op, other); await op.waitForURL("**/staff", { timeout: 20000 });
+    const oc = await newCtx(); const op = await oc.newPage(); await login(op, other); await op.waitForURL((u) => /^\/(staff|admin)\/?$/.test(u.pathname), { timeout: 20000 });
     const ocookie = (await oc.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
     await call("POST", "/api/staff/push/unsubscribe", { endpoint: s1.endpoint }, { cookie: ocookie });
     check("another staff member cannot remove my device", (await rest(`push_subscriptions?endpoint=eq.${encodeURIComponent(s1.endpoint)}&select=id`)).body.length === 1);
