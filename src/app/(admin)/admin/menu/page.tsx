@@ -5,6 +5,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export default async function AdminMenuPage() {
   await adminPage(["owner", "manager"]);
+  const renderedAt = Date.now(); // before the reads: the data below is at least this fresh
   const { data, error } = await createSupabaseAdmin()
     .from("categories")
     .select("*, items(*, item_variants(*), item_extras(*))")
@@ -25,5 +26,5 @@ export default async function AdminMenuPage() {
       }))
       .sort((a, b) => a.sort - b.sort),
   }));
-  return <MenuManager categories={categories} />;
+  return <MenuManager categories={categories} renderedAt={renderedAt} />;
 }

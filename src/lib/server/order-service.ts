@@ -12,7 +12,7 @@ import {
   type PricingZone,
 } from "@/lib/pricing/order";
 import type { OrderInput } from "@/lib/validation/order";
-import type { SiteSettings } from "@/lib/types";
+import { normalizeThreshold, type SiteSettings } from "@/lib/types";
 
 const admin = () => createSupabaseAdmin();
 const num = (v: unknown) => Number(v);
@@ -115,7 +115,7 @@ export async function buildQuote(input: {
       offers: ctx.offers,
       fulfillment: input.fulfillment,
       zone: ctx.zone,
-      freeDeliveryThreshold: ctx.settings.free_delivery_threshold === null ? null : num(ctx.settings.free_delivery_threshold),
+      freeDeliveryThreshold: normalizeThreshold(ctx.settings.free_delivery_threshold),
     });
   } catch (e) {
     if (e instanceof OrderError) throw new ApiError(422, e.code, e.message);

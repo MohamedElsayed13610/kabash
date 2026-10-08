@@ -1,6 +1,7 @@
 // End-to-end + abuse test for order creation. Run with the dev server up:
 //   node --env-file=.env.local scripts/e2e-orders.mjs [baseUrl]
 // Creates rows tagged with MARK, prints them, then deletes them. Restores any setting it touches.
+import { forceOpen } from "./_open.mjs";
 const BASE = process.argv[2] ?? "http://localhost:3100";
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -53,6 +54,7 @@ const goodOrder = (over = {}) => ({
 });
 
 const settingsBefore = Object.fromEntries((await rest("settings?select=key,value")).body.map((r) => [r.key, r.value]));
+await forceOpen(rest); // work at any time of day; the original override is restored from settingsBefore below
 let created = [];
 try {
   await resetLimits();

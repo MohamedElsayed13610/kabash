@@ -24,7 +24,8 @@ export function adminRoute<T>(roles: StaffRole[], schema: ZodType<T>, handler: (
       const staff = await requireStaff(roles);
       const input = await readJson(req, schema);
       const out = await handler(input, staff);
-      return NextResponse.json(out ?? { ok: true });
+      // `at` (server clock) lets the browser know whether a page render already includes this change
+      return NextResponse.json({ ...((out as object) ?? { ok: true }), at: Date.now() });
     } catch (e) {
       return fail(e);
     }

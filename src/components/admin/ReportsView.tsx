@@ -29,11 +29,12 @@ interface Bar { label: string; value: number; title: string; detail: string }
 
 function BarChart({ bars, fmt, name }: { bars: Bar[]; fmt: (v: number) => string; name: string }) {
   const [hover, setHover] = useState<number | null>(null);
-  const W = 640, H = 200, L = 48, R = 8, T = 14, B = 28;
+  // Drawn at roughly phone width so the 11px labels stay about 11px on screen (it scales up on wider screens).
+  const W = 360, H = 190, L = 44, R = 6, T = 14, B = 26;
   const innerW = W - L - R, innerH = H - T - B;
   const max = niceMax(Math.max(...bars.map((b) => b.value), 0));
   const slot = innerW / bars.length;
-  const bw = Math.min(30, slot * 0.7);
+  const bw = Math.min(26, slot * 0.7);
   const every = bars.length <= 10 ? 1 : Math.ceil(bars.length / 8);
   const y = (v: number) => T + innerH - (v / max) * innerH;
   const top = bars.reduce((m, b, i) => (b.value > bars[m].value ? i : m), 0);
@@ -81,7 +82,7 @@ function BarChart({ bars, fmt, name }: { bars: Bar[]; fmt: (v: number) => string
       {hover !== null && (
         <div
           role="status"
-          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 rounded-xl bg-charcoal px-3 py-2 text-sm text-ivory shadow-lg"
+          className="pointer-events-none absolute top-0 z-10 -translate-x-1/2 whitespace-nowrap rounded-xl bg-charcoal px-3 py-2 text-sm text-ivory shadow-lg"
           style={{ left: `${Math.min(88, Math.max(12, ((L + slot * hover + slot / 2) / W) * 100))}%` }}
           dir="rtl"
         >
@@ -114,7 +115,7 @@ export function ReportsView({ report }: { report: Report }) {
 
   const label = (p: DayPoint) => (view === "daily" ? shortDate(p.key) : shortDate(p.key));
   const title = (p: DayPoint) => (view === "daily" ? fullDate(p.key) : `أسبوع من ${fullDate(p.key)}`);
-  const orderBars: Bar[] = rows.map((p) => ({ label: label(p), value: p.orders, title: title(p), detail: `${p.orders} طلب (${p.delivered} اتسلم${p.cancelled ? `، ${p.cancelled} ملغي` : ""})` }));
+  const orderBars: Bar[] = rows.map((p) => ({ label: label(p), value: p.orders, title: title(p), detail: `${p.orders} طلب · ${p.delivered} اتسلم${p.cancelled ? ` · ${p.cancelled} ملغي` : ""}` }));
   const revBars: Bar[] = rows.map((p) => ({ label: label(p), value: p.revenue, title: title(p), detail: `${formatMoney(p.revenue)} ${ar.currency}` }));
 
   return (

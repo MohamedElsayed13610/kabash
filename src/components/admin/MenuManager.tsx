@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAdmin } from "./AdminProvider";
+import { useEffect, useRef, useState } from "react";
+import { useAdmin, useFreshSignal } from "./AdminProvider";
 import { BottomSheet } from "../ui/BottomSheet";
 import { ItemArt } from "../ui/ItemArt";
 import { SortableList } from "./SortableList";
@@ -92,7 +92,7 @@ function ItemEditor({
 }
 
 function ItemEditorBody({ item, category, categories, onClose }: { item: AdminItem | null; category: AdminCategory; categories: AdminCategory[]; onClose: () => void }) {
-  const { post, busy } = useAdmin();
+  const { post, busy, confirm } = useAdmin();
   const initial = item ? toForm(item) : blankForm(category);
   const [f, setF] = useState<ItemForm>(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -277,13 +277,27 @@ function ItemEditorBody({ item, category, categories, onClose }: { item: AdminIt
 
       {formError && <p role="alert" className="mt-3 rounded-xl bg-ember/10 p-3 font-medium text-ember">{formError}</p>}
 
-      <div className="sticky bottom-0 mt-4 flex gap-3 bg-ivory py-2">
+      <div className="sticky bottom-0 mt-4 flex flex-wrap items-center gap-3 bg-ivory py-2">
         <button type="button" onClick={save} disabled={busy} className={`${btn.primary} h-14 flex-1 !text-2xl`}>
           {busy ? "بنحفظ…" : "حفظ الصنف"}
         </button>
         <button type="button" onClick={cancel} className={`${btn.ghost} h-14`}>
           إلغاء
         </button>
+        {item && (
+          <button
+            type="button"
+            onClick={async () => {
+              if (await confirm({ title: `مسح ${item.name_ar}؟`, body: "الطلبات القديمة هتفضل زي ما هي.", confirmLabel: "امسح الصنف", danger: true })) {
+                const res = await post("items", { op: "delete", id: item.id }, "اتمسح الصنف");
+                if (res.ok) onClose();
+              }
+            }}
+            className="h-12 w-full text-ember underline"
+          >
+            مسح الصنف
+          </button>
+        )}
       </div>
     </div>
   );
@@ -328,8 +342,22 @@ function CategoryEditor({ state, onClose }: { state: { kind: Kind; cat: AdminCat
 
 /* ------------------------------------------------------------------ manager */
 
-export function MenuManager({ categories }: { categories: AdminCategory[] }) {
-  const { post, confirm } = useAdmin();
+export function MenuManager({ categories, renderedAt }: { categories: AdminCategory[]; renderedAt: number }) {
+  const { post, confirm, ready } = useAdmin();
+  useFreshSignal(renderedAt);
+  const latest = useRef(categories);
+  latest.current = categories;
+
+  /** Opens an editor with the NEWEST data: waits for any pending refresh, then reads the current rows. */
+  const openItem = async (catId: string, itemId: string | null) => {
+    await ready();
+    const cat = latest.current.find((c) => c.id === catId);
+    if (cat) setEditing({ cat, item: itemId ? (cat.items.find((i) => i.id === itemId) ?? null) : null });
+  };
+  const openCat = async (kind: Kind, catId: string | null) => {
+    await ready();
+    setCatEdit({ kind, cat: catId ? (latest.current.find((c) => c.id === catId) ?? null) : null });
+  };
   const [kind, setKind] = useState<Kind>("restaurant");
   const [open, setOpen] = useState<string | null>(null);
   const [editing, setEditing] = useState<{ item: AdminItem | null; cat: AdminCategory } | null>(null);
@@ -374,7 +402,7 @@ export function MenuManager({ categories }: { categories: AdminCategory[] }) {
 
       <div className="mt-4 flex items-center justify-between">
         <p className="text-charcoal/70">اسحب ⠿ عشان ترتب الأقسام والأصناف.</p>
-        <button onClick={() => setCatEdit({ kind, cat: null })} className={btn.ghost} data-testid="add-category">
+        <button onClick={() => void openCat(kind, null)} className={btn.ghost} data-testid="add-category">
           + قسم
         </button>
       </div>
@@ -413,10 +441,10 @@ export function MenuManager({ categories }: { categories: AdminCategory[] }) {
                 {expanded && (
                   <div className="border-t border-charcoal/10 p-3">
                     <div className="mb-3 flex flex-wrap items-center gap-2">
-                      <button onClick={() => setEditing({ item: null, cat: c })} className={btn.primary} data-testid="add-item">
+                      <button onClick={() => void openItem(c.id, null)} className={btn.primary} data-testid="add-item">
                         + صنف جديد
                       </button>
-                      <button onClick={() => setCatEdit({ kind, cat: c })} className={btn.ghost}>
+                      <button onClick={() => void openCat(kind, c.id)} className={btn.ghost}>
                         تعديل الاسم
                       </button>
                       <label className="flex items-center gap-2">
@@ -447,7 +475,7 @@ export function MenuManager({ categories }: { categories: AdminCategory[] }) {
                             <div data-item={i.name_ar} className={`flex items-center gap-2 rounded-xl border border-charcoal/10 bg-ivory p-2 ${i.active ? "" : "opacity-60"}`}>
                               {ctl.handle}
                               <ItemArt name={i.name_ar} src={i.image_url} sizes="56px" className="size-14 shrink-0 rounded-full" />
-                              <button onClick={() => setEditing({ item: i, cat: c })} className="min-w-0 flex-1 text-start" aria-label={`تعديل ${i.name_ar}`}>
+                              <button onClick={() => void openItem(c.id, i.id)} className="min-w-0 flex-1 text-start" aria-label={`تعديل ${i.name_ar}`}>
                                 <span className="block truncate font-display text-xl leading-tight">
                                   {i.name_ar} {i.is_sample && <SampleBadge />}
                                 </span>

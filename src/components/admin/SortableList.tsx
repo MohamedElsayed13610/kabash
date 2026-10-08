@@ -32,6 +32,7 @@ function Row<T extends { id: string }>({
     <Reorder.Item
       value={item}
       as="li"
+      layout="position"
       dragListener={false}
       dragControls={controls}
       onDragEnd={onDragEnd}

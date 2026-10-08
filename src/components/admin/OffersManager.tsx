@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useAdmin } from "./AdminProvider";
+import { useEffect, useRef, useState } from "react";
+import { useAdmin, useFreshSignal } from "./AdminProvider";
 import { BottomSheet } from "../ui/BottomSheet";
 import { discardUpload, ImageUploader } from "./ImageUploader";
 import { btn, EmptyState, Field, inputCls, SampleBadge, Switch } from "./ui";
@@ -189,10 +189,19 @@ function Editor({ offer, targets, onClose }: { offer: AdminOffer | null; targets
   );
 }
 
-export function OffersManager({ offers, targets }: { offers: AdminOffer[]; targets: { items: Target[]; categories: Target[] } }) {
-  const { post, confirm } = useAdmin();
+export function OffersManager({ offers, targets, renderedAt }: { offers: AdminOffer[]; targets: { items: Target[]; categories: Target[] }; renderedAt: number }) {
+  const { post, confirm, ready } = useAdmin();
+  useFreshSignal(renderedAt);
+  const latest = useRef(offers);
+  latest.current = offers;
+  const openOffer = async (id: string | null) => {
+    await ready(); // never edit from stale data
+    setEditing({ offer: id ? (latest.current.find((o) => o.id === id) ?? null) : null });
+  };
   const [editing, setEditing] = useState<{ offer: AdminOffer | null } | null>(null);
   const [now] = useState(() => Date.now());
+  const [opt, setOpt] = useState<Record<string, boolean>>({}); // instant switches until the server data arrives
+  useEffect(() => setOpt({}), [offers]);
   const nameOf = (o: AdminOffer) =>
     o.target_type === "cart" ? "إجمالي الطلب" : (o.target_type === "item" ? targets.items : targets.categories).find((t) => t.id === o.target_id)?.name ?? "—";
 
@@ -200,7 +209,7 @@ export function OffersManager({ offers, targets }: { offers: AdminOffer[]; targe
     <div>
       <div className="flex items-center justify-between gap-3">
         <h1 className="font-display text-4xl text-forest">العروض</h1>
-        <button onClick={() => setEditing({ offer: null })} className={btn.ember} data-testid="add-offer">
+        <button onClick={() => void openOffer(null)} className={btn.ember} data-testid="add-offer">
           + عرض
         </button>
       </div>
@@ -209,7 +218,8 @@ export function OffersManager({ offers, targets }: { offers: AdminOffer[]; targe
       <div className="mt-4 space-y-3">
         {offers.length === 0 && <EmptyState title="مفيش عروض" body="اعمل أول عرض وهيظهر للعملاء فورًا." />}
         {offers.map((o) => {
-          const st = offerStatus(o, now);
+          const active = opt[o.id] ?? o.active;
+          const st = offerStatus({ ...o, active }, now);
           return (
             <article key={o.id} data-offer={o.title_ar} className="rounded-2xl border-2 border-charcoal/10 bg-white p-4">
               <div className="flex items-start justify-between gap-3">
@@ -230,10 +240,10 @@ export function OffersManager({ offers, targets }: { offers: AdminOffer[]; targe
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <label className="flex items-center gap-2">
-                  <Switch label={`تشغيل ${o.title_ar}`} checked={o.active} onChange={(v) => void post("offers", { op: "patch", id: o.id, active: v })} />
+                  <Switch label={`تشغيل ${o.title_ar}`} checked={active} onChange={(v) => { setOpt((m) => ({ ...m, [o.id]: v })); void post("offers", { op: "patch", id: o.id, active: v }); }} />
                   <span className="text-sm">شغال</span>
                 </label>
-                <button onClick={() => setEditing({ offer: o })} className={btn.ghost}>تعديل</button>
+                <button onClick={() => void openOffer(o.id)} className={btn.ghost}>تعديل</button>
                 <button
                   onClick={async () => {
                     if (await confirm({ title: `مسح عرض "${o.title_ar}"؟`, confirmLabel: "امسح العرض", danger: true })) await post("offers", { op: "delete", id: o.id }, "اتمسح العرض");

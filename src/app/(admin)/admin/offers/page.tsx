@@ -5,6 +5,7 @@ import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export default async function AdminOffersPage() {
   await adminPage(["owner", "manager"]);
+  const renderedAt = Date.now(); // before the reads: the data below is at least this fresh
   const db = createSupabaseAdmin();
   const [offers, cats, items] = await Promise.all([
     db.from("offers").select("*"),
@@ -20,6 +21,7 @@ export default async function AdminOffersPage() {
 
   return (
     <OffersManager
+      renderedAt={renderedAt}
       offers={list}
       targets={{
         categories: (cats.data ?? []).map((c) => ({ id: c.id, name: c.name_ar, group: c.type === "butcher" ? "جزارة" : "مطعم" })),

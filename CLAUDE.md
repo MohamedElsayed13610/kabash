@@ -28,3 +28,13 @@ Next.js App Router + TypeScript, Tailwind v4 (logical properties only: `ms-*`, `
 - Each line's discount (incl. its share of any cart offer) is snapshotted in `order_items.variant_snapshot.discount` so Phase 5 can recompute butcher finals.
 - Rate limits (DB-backed, `rate_limit_hit`): orders 30/10min per IP (carrier NAT shares IPs), 3/10min per phone; quotes 60/min per IP.
 - Run `node --env-file=.env.local scripts/e2e-orders.mjs` (dev server up) to re-test orders and abuse cases. It cleans up after itself.
+
+## Admin dashboard (Phase 6)
+- Routes: `/admin` (owner + manager), `/admin/settings` and `/admin/staff` (owner only). Cashiers go to `/staff`. Pages AND `/api/admin/*` both check the role on the server (`adminPage()` / `adminRoute()`); the proxy is only the front door.
+- All writes go through `/api/admin/<resource>` with Zod (`src/lib/validation/admin.ts`) and the service role. Photos upload straight from the browser to Storage (RLS allows owner/manager), after client-side crop + WebP compression (`ImageUploader`). Only URLs from our own `menu` bucket are accepted for `image_url`.
+- Free-delivery "off" is stored as `0` (JSON null becomes SQL NULL, which `settings.value` refuses). Always read it through `normalizeThreshold()`.
+- Editors must never open from stale data: every admin API answer carries the server time `at`, each page stamps `renderedAt` BEFORE its reads, and `useAdmin().ready()` waits until a render newer than the last save arrived. Switches are optimistic (local `opt` map cleared when props change).
+- Reorder rows use `layout="position"` only (full layout animation squashes expanded content).
+- Charts: validated palette for the two-category split (`#35a35f` / `#c2410c`), single-series bars, table view available, `dir="ltr"` charts with Western digits.
+- Tracking section: the customer's device keeps ONLY code, time, total, last status and type (`kabash.recentOrders.v1`). Never phone numbers or addresses. Status is polled in one batched call (`/api/track-status`, max 5 codes, unknown codes count against the same 20-per-10-min guess limit).
+- Tests: `scripts/e2e-admin.mjs`, `e2e-staff.mjs`, `e2e-track-section.mjs`, `e2e-tracking.mjs`, `e2e-orders.mjs` (dev server up; each cleans up after itself).

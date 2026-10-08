@@ -129,7 +129,7 @@ export const settingSchemas = {
   }),
   open_override: z.enum(["auto", "open", "closed"]),
   accept_orders_when_closed: z.boolean(),
-  free_delivery_threshold: z.number().finite().positive().max(1000000).nullable(),
+  free_delivery_threshold: z.number().finite().min(0).max(1000000).nullable(), // null or 0 = off
   announcement_ar: z.string().trim().max(160),
 } as const;
 

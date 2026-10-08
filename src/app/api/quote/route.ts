@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { normalizeThreshold } from "@/lib/types";
 import { buildQuote, clientIp, hashKey, limit } from "@/lib/server/order-service";
 import { fail, readJson } from "@/lib/server/http";
 import { quoteSchema } from "@/lib/validation/order";
@@ -15,7 +16,7 @@ export async function POST(req: Request) {
       totals,
       open,
       canOrder,
-      freeDeliveryThreshold: settings.free_delivery_threshold,
+      freeDeliveryThreshold: normalizeThreshold(settings.free_delivery_threshold),
     });
   } catch (e) {
     return fail(e);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAdmin } from "./AdminProvider";
 import { BottomSheet } from "../ui/BottomSheet";
 import { btn, EmptyState, Field, inputCls, Switch } from "./ui";
@@ -113,6 +113,8 @@ export function StaffManager({ staff, meId }: { staff: StaffRow[]; meId: string 
   const { post, confirm } = useAdmin();
   const [creating, setCreating] = useState(false);
   const [pwFor, setPwFor] = useState<StaffRow | null>(null);
+  const [opt, setOpt] = useState<Record<string, boolean>>({}); // instant switches until the server data arrives
+  useEffect(() => setOpt({}), [staff]);
 
   return (
     <div>
@@ -126,8 +128,9 @@ export function StaffManager({ staff, meId }: { staff: StaffRow[]; meId: string 
         {staff.length === 0 && <EmptyState title="مفيش موظفين" body="ضيف أول موظف." />}
         {staff.map((s) => {
           const me = s.user_id === meId;
+          const active = opt[s.user_id] ?? s.active;
           return (
-            <article key={s.user_id} data-staff={s.email} className={`rounded-2xl border-2 border-charcoal/10 bg-white p-4 ${s.active ? "" : "opacity-60"}`}>
+            <article key={s.user_id} data-staff={s.email} className={`rounded-2xl border-2 border-charcoal/10 bg-white p-4 ${active ? "" : "opacity-60"}`}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h2 className="font-display text-2xl leading-tight">{s.name} {me && <span className="rounded bg-forest px-2 py-0.5 align-middle font-body text-xs text-ivory">أنت</span>}</h2>
@@ -137,8 +140,8 @@ export function StaffManager({ staff, meId }: { staff: StaffRow[]; meId: string 
                   </p>
                 </div>
                 <label className="flex flex-col items-center gap-0.5">
-                  <Switch label={`${s.name} شغال`} checked={s.active} disabled={me} onChange={(v) => void post("staff", { op: "update", userId: s.user_id, active: v }, v ? "اتفعل الحساب" : "اتوقف الحساب")} />
-                  <span className="text-xs">{s.active ? "شغال" : "موقوف"}</span>
+                  <Switch label={`${s.name} شغال`} checked={active} disabled={me} onChange={(v) => { setOpt((m) => ({ ...m, [s.user_id]: v })); void post("staff", { op: "update", userId: s.user_id, active: v }, v ? "اتفعل الحساب" : "اتوقف الحساب"); }} />
+                  <span className="text-xs">{active ? "شغال" : "موقوف"}</span>
                 </label>
               </div>
               <div className="mt-3 flex flex-wrap items-center gap-2">

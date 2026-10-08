@@ -110,6 +110,10 @@ export function ImageUploader({ value, onChange, folder, aspect = 1, outputWidth
       if (uploadedHere.current) await discardUpload(uploadedHere.current); // replaced a photo that was never saved
       uploadedHere.current = data.publicUrl;
       onChange(data.publicUrl);
+      setPreview((old) => {
+        if (old) URL.revokeObjectURL(old);
+        return null; // from now on show the real stored photo
+      });
       setBitmap(null);
     } catch (e) {
       setPreview(null);

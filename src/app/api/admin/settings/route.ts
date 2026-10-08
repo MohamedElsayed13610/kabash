@@ -19,10 +19,12 @@ export async function POST(req: Request) {
         [parsed.error.issues[0]?.path.join(".") || key]: parsed.error.issues[0]?.message ?? "",
       });
     }
-    must(await db().from("settings").upsert({ key, value: parsed.data, is_public: true }, { onConflict: "key" }));
+    // "no free delivery" is stored as 0: a JSON null would turn into SQL NULL and the column refuses it
+    const stored = parsed.data === null ? 0 : parsed.data;
+    must(await db().from("settings").upsert({ key, value: stored, is_public: true }, { onConflict: "key" }));
     void staff;
     revalidatePublic();
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, at: Date.now() });
   } catch (e) {
     return fail(e);
   }

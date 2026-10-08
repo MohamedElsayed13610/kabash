@@ -6,6 +6,7 @@ import { chromium } from "playwright-core";
 import { createClient } from "@supabase/supabase-js";
 import { randomBytes, createECDH } from "node:crypto";
 
+import { forceOpen } from "./_open.mjs";
 const BASE = process.argv[2] ?? "http://localhost:3100";
 const SHOTS = process.argv[3] ?? ".";
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL, ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, SVC = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -31,6 +32,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const hasAck = (await rest("orders?select=acknowledged_by&limit=1")).status === 200;
 const hasPush = (await rest("push_subscriptions?select=id&limit=1")).status === 200;
 const MIG = hasAck && hasPush;
+const restoreOpen = await forceOpen(rest); // work at any time of day
 console.log(`migration 0003 applied: ack column=${hasAck}, push table=${hasPush}\n`);
 
 const items = (await rest("items?select=id,name_ar,item_variants(id,name_ar),item_extras(id,name_ar)", { key: ANON })).body;
@@ -321,6 +323,7 @@ try {
 } finally {
   await browser.close().catch(() => {});
   const del = await rest(`orders?customer_name=eq.${encodeURIComponent(MARK)}`, { method: "DELETE" });
+  await restoreOpen();
   for (const u of users) await admin.auth.admin.deleteUser(u.id);
   await resetLimits();
   console.log(`\nCleanup: deleted ${del.body?.length ?? 0} test orders and ${users.length} temporary users (their profiles and push devices cascade).`);

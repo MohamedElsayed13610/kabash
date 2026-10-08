@@ -4,6 +4,7 @@
 // WITHOUT a reload. Deletes its test orders at the end.
 import { chromium } from "playwright-core";
 
+import { forceOpen } from "./_open.mjs";
 const BASE = process.argv[2] ?? "http://localhost:3100";
 const SHOTS = process.argv[3] ?? ".";
 const URL_ = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -27,6 +28,7 @@ let pass = 0, failed = 0;
 const check = (name, ok, detail = "") => { ok ? pass++ : failed++; console.log(`${ok ? "PASS" : "FAIL"}  ${name}${detail ? `  [${detail}]` : ""}`); };
 
 const get = async (p) => (await rest(p, { key: ANON })).body;
+const restoreOpen = await forceOpen(rest); // work at any time of day
 const items = await get("items?select=id,name_ar,item_variants(id,name_ar),item_extras(id,name_ar)");
 const zones = await get("delivery_zones?select=id&order=sort");
 const mandi = items.find((i) => i.name_ar === "مندي لحم"), kandoz = items.find((i) => i.name_ar === "لحم كندوز");
@@ -178,6 +180,7 @@ try {
   await browser.close();
 } finally {
   const del = await rest(`orders?customer_name=eq.${encodeURIComponent(MARK)}`, { method: "DELETE" });
+  await restoreOpen();
   await resetLimits();
   console.log(`\nCleanup: deleted ${del.body?.length ?? 0} test orders, rate limits cleared.`);
 }

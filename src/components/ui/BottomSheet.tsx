@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion, useDragControls } from "motion/react";
 
 interface Props {
@@ -14,6 +15,8 @@ interface Props {
 export function BottomSheet({ open, onClose, label, children }: Props) {
   const controls = useDragControls();
   const panel = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -28,7 +31,10 @@ export function BottomSheet({ open, onClose, label, children }: Props) {
     };
   }, [open, onClose]);
 
-  return (
+  // Rendered into <body> so a sheet opened from inside another sheet (e.g. photo crop in the item editor)
+  // is not trapped by the parent sheet's transform.
+  if (!mounted) return null;
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end justify-center">
@@ -72,6 +78,7 @@ export function BottomSheet({ open, onClose, label, children }: Props) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }

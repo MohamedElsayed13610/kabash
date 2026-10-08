@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
@@ -9,6 +9,7 @@ import { useCart } from "../cart/CartProvider";
 import { statusLabel } from "@/lib/tracking-labels";
 
 const SHOWN_ON = ["/menu", "/butcher", "/offers"];
+const onChipPage = (path: string) => path === "/" || SHOWN_ON.some((p) => path.startsWith(p));
 
 /** Floating "طلبك قيد التحضير · تتبع" chip on the menu pages while an order is still in progress. */
 export function ActiveOrderChip() {
@@ -16,10 +17,21 @@ export function ActiveOrderChip() {
   const { active } = useOrderStatus();
   const { count, hydrated } = useCart();
   const [dismissed, setDismissed] = useState<string | null>(null); // "CODE:status" the customer closed
+  const [sectionInView, setSectionInView] = useState(false);
+
+  // On the home page the full "تتبع طلبك" section is there too: hide the chip while that section is on screen.
+  useEffect(() => {
+    if (path !== "/") return setSectionInView(false);
+    const el = document.querySelector("[data-testid=track-section]");
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setSectionInView(e.isIntersecting), { threshold: 0.15 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [path, active.length]);
 
   const latest = [...active].sort((a, b) => b.at - a.at)[0];
   const key = latest ? `${latest.code}:${latest.status}` : null;
-  const show = !!latest && SHOWN_ON.some((p) => path.startsWith(p)) && dismissed !== key;
+  const show = !!latest && onChipPage(path) && !sectionInView && dismissed !== key;
   // sit above the cart bar when it is on screen
   const bottom = hydrated && count > 0 ? "calc(8.75rem + env(safe-area-inset-bottom))" : "calc(5.25rem + env(safe-area-inset-bottom))";
 

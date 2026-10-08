@@ -76,3 +76,8 @@ export interface SiteSettings {
   free_delivery_threshold: number | null;
   announcement_ar: string;
 }
+
+/** The free-delivery threshold as stored: a positive number, or anything else (null / 0 / missing) meaning "off". */
+export function normalizeThreshold(v: unknown): number | null {
+  return typeof v === "number" && Number.isFinite(v) && v > 0 ? v : null;
+}
