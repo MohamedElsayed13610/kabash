@@ -24,12 +24,17 @@ const admin = createClient(URL_, SVC, { auth: { persistSession: false } });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let pass = 0, failed = 0;
 const check = (n, ok, d = "") => { ok ? pass++ : failed++; console.log(`${ok ? "PASS" : "FAIL"}  ${n}${d !== "" ? `  [${d}]` : ""}`); };
+// E2E_ONLY=C,D,E runs just those sections and does not force the shop open first (use it while the shop is taking real orders; skip F, it flips the shop to closed)
+const ONLY = process.env.E2E_ONLY?.split(",") ?? null;
 async function section(name, fn) {
+  if (ONLY && !ONLY.includes(name.split(".")[0])) return;
   console.log(`\n== ${name} ==`);
   try { await fn(); } catch (e) { check(`${name}: section crashed`, false, String(e.message).split("\n")[0].slice(0, 160)); }
 }
 const api = (resource, body, cookie, ip = "10.40.0.1") => fetch(`${BASE}/api/admin/${resource}`, { method: "POST", headers: { "Content-Type": "application/json", cookie: cookie ?? "", "x-forwarded-for": ip }, body: JSON.stringify(body) }).then(async (r) => ({ status: r.status, body: await r.json().catch(() => null) }));
 const page$ = (path, cookie) => fetch(`${BASE}${path}`, { redirect: "manual", headers: { cookie: cookie ?? "" } }).then(async (r) => ({ status: r.status, location: r.headers.get("location"), text: r.status === 200 ? await r.text() : "" }));
+/** Where a response sends the browser: a Location header, or (behind loading.tsx, where redirects stream) a refresh tag. */
+const toOf = (r) => r.location ?? r.text.match(/http-equiv="refresh"[^>]*content="\d+;url=([^"]+)"/)?.[1] ?? null;
 const cookieOf = async (ctx) => (await ctx.cookies()).map((c) => `${c.name}=${c.value}`).join("; ");
 const clean = (e) => String(e?.message ?? e).split("\n")[0];
 
@@ -48,7 +53,7 @@ await sharp({ create: { width: 1200, height: 900, channels: 3, background: "#c24
 await sharp({ create: { width: 900, height: 1200, channels: 3, background: "#0b5128" } }).png().toFile(img2);
 
 const snap = Object.fromEntries((await rest("settings?select=key,value")).body.map((r) => [r.key, r.value]));
-await forceOpen(rest); // work at any time of day; every original setting is restored from `snap` at the end
+if (!ONLY) await forceOpen(rest); // work at any time of day; every original setting is restored from `snap` at the end
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 const phone = { viewport: { width: 390, height: 844 }, locale: "ar-EG", isMobile: true, hasTouch: true, deviceScaleFactor: 2 };
 const errors = [];
@@ -93,7 +98,9 @@ try {
     }
     for (const p of ["/admin/settings", "/admin/staff"]) {
       const r = await page$(p, mC);
-      check(`manager: ${p} is owner-only -> redirected`, r.status === 307 && /\/admin$/.test(r.location ?? ""), `${r.status} ${r.location}`);
+      // behind admin/loading.tsx the redirect streams in (200 + refresh tag) instead of a 307; what matters is that the owner-only content never ships
+      const to = r.location ?? r.text.match(/http-equiv="refresh"[^>]*content="\d+;url=([^"]+)"/)?.[1] ?? null;
+      check(`manager: ${p} is owner-only -> redirected, none of the page is sent`, to === "/admin" && !r.text.includes("اسم المطعم") && !r.text.includes("استقبال طلبات وأنت مقفول") && !r.text.includes("اعمل واحدة"), `${r.status} ${to}`);
     }
     for (const p of ["/admin/settings", "/admin/staff", "/admin/reports"]) check(`owner: ${p} opens`, (await page$(p, oC)).status === 200);
     check("manager nav hides Settings and Staff", !(await mgrPage.goto(`${BASE}/admin`).then(() => mgrPage.getByRole("link", { name: "الإعدادات" }).count())) && (await mgrPage.getByRole("link", { name: "الموظفين" }).count()) === 0);
@@ -226,6 +233,7 @@ try {
     await p.getByLabel("السعر (ج.م)", { exact: true }).fill("120");
     await p.getByRole("button", { name: "حفظ الصنف" }).click();
     check("edit price (UI)", await toast(p, "اتحفظ الصنف"));
+    await until(async () => Number((await rest(`items?id=eq.${itemId}&select=base_price`)).body[0]?.base_price) === 120); // the toast can be the previous save's
     const [e1] = (await rest(`items?id=eq.${itemId}&select=base_price,image_url`)).body;
     check("price is 120 and the photo is untouched", Number(e1.base_price) === 120 && e1.image_url === firstImage);
 
@@ -317,7 +325,9 @@ try {
     const variant = (await rest(`item_variants?item_id=eq.${itemId}&select=id`)).body[0].id;
     const quote = async () => (await (await fetch(`${BASE}/api/quote`, { method: "POST", headers: { "Content-Type": "application/json", "x-forwarded-for": "10.40.2.1" }, body: JSON.stringify({ fulfillment: "pickup", lines: [{ itemId, variantId: variant, qty: 2 }] }) })).json()).totals;
     let q = await quote();
-    check("the discount is applied: (120+50) x 2 = 340, this offer takes 20% = 68 on top of any store-wide offers", q.subtotal === 340 && Math.abs(q.discountTotal - baseline - 68) < 0.01 && Math.abs(q.total - (340 - q.discountTotal)) < 0.01, `subtotal ${q.subtotal}, discount ${q.discountTotal} (baseline ${baseline}), total ${q.total}`);
+    // a real percentage offer on the whole cart (the owner may have one running) compounds with ours instead of adding, so then only check direction and consistency
+    const pctCart = (await rest(`offers?select=id&active=eq.true&target_type=eq.cart&discount_type=eq.percent&title_ar=not.like.*${encodeURIComponent(MARK)}*`)).body.length > 0;
+    check("the discount is applied: (120+50) x 2 = 340, this offer takes 20% = 68 on top of any store-wide offers", q.subtotal === 340 && (pctCart ? q.discountTotal > baseline : Math.abs(q.discountTotal - baseline - 68) < 0.01) && Math.abs(q.total - (340 - q.discountTotal)) < 0.01, `subtotal ${q.subtotal}, discount ${q.discountTotal} (baseline ${baseline}), total ${q.total}`);
 
     await p.getByRole("switch", { name: `تشغيل ${OFFER}` }).click();
     await until(async () => (await rest(`offers?id=eq.${o.id}&select=active`)).body[0].active === false);
@@ -412,7 +422,8 @@ try {
     await fd.getByRole("button", { name: "حفظ" }).click();
     check("free delivery above 100 (UI)", await toast(p, "اتحفظ حد التوصيل المجاني"));
     q = await quote();
-    check("a 170 EGP order now gets free delivery", q.body.totals?.freeDelivery === true && q.body.totals?.deliveryFee === 0);
+    const goods = q.body.totals?.subtotal - q.body.totals?.discountTotal; // the threshold is judged AFTER discounts
+    check(`a ${goods} EGP order (after discounts) ${goods >= 100 ? "now gets free delivery" : "is still charged: below the 100 threshold"}`, goods >= 100 ? q.body.totals?.freeDelivery === true && q.body.totals?.deliveryFee === 0 : q.body.totals?.freeDelivery !== true && q.body.totals?.deliveryFee > 0);
     await fd.getByRole("switch", { name: "توصيل مجاني" }).click();
     check("turn it off (UI)", await toast(p, "اتقفل التوصيل المجاني"));
     await p.waitForTimeout(800);
@@ -517,7 +528,7 @@ try {
 
     const nctx = await browser.newContext(phone);
     const np = await login(nctx, users.newbie);
-    check("the new cashier can sign in and reaches the board", await np.getByText("الطلبات", { exact: true }).first().isVisible({ timeout: 15000 }));
+    check("the new cashier can sign in and reaches the board", await np.getByRole("heading", { name: "الطلبات", exact: true }).waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
     const nC = await cookieOf(nctx);
     check("...but is kept out of the admin area", (await page$("/admin/menu", nC)).status === 307 && (await api("items", { op: "patch", id: itemId, available: true }, nC)).status === 403);
 
@@ -525,12 +536,12 @@ try {
     await row.locator("select").selectOption("manager");
     check("promote to manager (UI)", await toast(p, "اتغيرت الصلاحية"));
     await sleep(600);
-    check("now the admin area opens for them", (await page$("/admin/menu", nC)).status === 200 && (await page$("/admin/staff", nC)).status === 307);
+    check("now the admin area opens for them", toOf(await page$("/admin/menu", nC)) === null && toOf(await page$("/admin/staff", nC)) === "/admin");
 
     await row.getByRole("switch").click();
     check("deactivate (UI)", await toast(p, "اتوقف الحساب"));
     await sleep(600);
-    check("a deactivated account is locked out at once (API 401, pages redirect)", (await api("items", { op: "patch", id: itemId, available: true }, nC)).status === 401 && (await page$("/staff", nC)).status !== 200);
+    check("a deactivated account is locked out at once (API 401, pages redirect)", (await api("items", { op: "patch", id: itemId, available: true }, nC)).status === 401 && /^\/staff\/login/.test(toOf(await page$("/staff", nC)) ?? ""));
     await row.getByRole("switch").click();
     await toast(p, "اتفعل الحساب");
 

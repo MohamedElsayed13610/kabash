@@ -36,6 +36,10 @@ const items = await get("items?select=id,name_ar,base_price,category_id,item_var
 const zones = await get("delivery_zones?select=*&order=sort");
 const item = (n) => items.find((i) => i.name_ar === n);
 const mandi = item("مندي لحم"), kandoz = item("لحم كندوز"), chicken = item("مندي دجاج");
+if (!mandi || !kandoz || !chicken || !zones[1]) {
+  console.error("e2e-orders needs the seeded sample menu (مندي لحم, لحم كندوز, مندي دجاج and the sample delivery zones) and the sample offers.\nThe owner has replaced them with real data, and this suite temporarily edits zones and items, so it must not run against the live shop.\nRun it against a freshly seeded copy of the database. Pricing maths stays covered by `npx vitest run`.");
+  process.exit(2);
+}
 const large = mandi.item_variants.find((v) => v.name_ar === "كبير");
 const yog = mandi.item_extras.find((e) => e.name_ar === "سلطة زبادي");
 const drink = mandi.item_extras.find((e) => e.name_ar === "مشروب");

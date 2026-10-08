@@ -19,7 +19,10 @@ const admin = createClient(URL_, SVC, { auth: { persistSession: false } });
 const rest = (p, o = {}) => fetch(`${URL_}/rest/v1/${p}`, { ...o, headers: { apikey: SVC, Authorization: `Bearer ${SVC}`, "Content-Type": "application/json", Prefer: "return=representation" } }).then(async (r) => ({ status: r.status, body: r.status === 204 ? null : await r.json().catch(() => null) }));
 let pass = 0, failed = 0;
 const check = (n, ok, d = "") => { ok ? pass++ : failed++; console.log(`${ok ? "PASS" : "FAIL"}  ${n}${d !== "" ? `  [${d}]` : ""}`); };
+// E2E_ONLY=J runs only the listed sections (A, B, ...)
+const ONLY = process.env.E2E_ONLY?.split(",") ?? null;
 async function section(name, fn) {
+  if (ONLY && !ONLY.includes(name.split(".")[0])) return;
   console.log(`\n== ${name} ==`);
   try { await fn(); } catch (e) { check(`${name}: section crashed`, false, String(e.message).split("\n")[0].slice(0, 160)); }
 }
@@ -343,6 +346,46 @@ try {
     }
     check("keyboard focus is visible (outline >= 2px) on the first 12 tab stops of /menu", bad.length === 0, bad.join(" | "));
     await k.close();
+  });
+
+
+  // ================================================================ J
+  await section("J. Accounts without access are turned away, and removal is immediate", async () => {
+    const mk = async (label, { profile = true, active = true } = {}) => {
+      const email = `p7-${label}-${TAG}@kabash-test.invalid`, password = randomBytes(12).toString("base64url");
+      const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+      if (error) throw error;
+      if (profile) await admin.from("profiles").insert({ user_id: data.user.id, name: `اختبار ${label}`, role: "cashier", active });
+      users[label] = { id: data.user.id, email, password, role: "cashier" };
+      return users[label];
+    };
+    const leftLogin = (page) => page.waitForURL((u) => u.pathname.startsWith("/staff/login"), { timeout: 15000 }).then(() => true).catch(() => false);
+    for (const u of [await mk("noprofile", { profile: false }), await mk("inactive", { active: false })]) {
+      const { ctx, page } = await fresh();
+      await page.goto(`${BASE}/staff/login`, { waitUntil: "domcontentloaded" });
+      await page.fill("#email", u.email); await page.fill("#password", u.password); await page.click("button[type=submit]");
+      await page.waitForTimeout(2500);
+      await page.goto(`${BASE}/staff`, { waitUntil: "domcontentloaded" });
+      const back = await leftLogin(page);
+      check(`${u.email.split("-")[1]}: valid password but no active staff profile -> sent back to login with the Arabic reason`, back && (await page.getByText("مش متفعل كموظف").waitFor({ timeout: 8000 }).then(() => true).catch(() => false)), new URL(page.url()).pathname);
+      const adm = await page.goto(`${BASE}/admin`, { waitUntil: "domcontentloaded" });
+      await page.waitForURL((x) => !x.pathname.startsWith("/admin"), { timeout: 15000 }).catch(() => {});
+      check(`${u.email.split("-")[1]}: /admin is closed too`, !new URL(page.url()).pathname.startsWith("/admin"), new URL(page.url()).pathname);
+      await ctx.close();
+    }
+    const c = await mk("goner");
+    const { ctx, page } = await fresh();
+    await signIn(page, c);
+    await page.getByRole("heading", { name: "الطلبات", exact: true }).waitFor({ timeout: 20000 });
+    check("an active cashier reaches the board (heading visible)", true);
+    const cookie = await cookieOf(ctx);
+    await admin.from("profiles").update({ active: false }).eq("user_id", c.id);
+    const api = await fetch(`${BASE}/api/staff/summary`, { headers: { cookie } });
+    check("deactivated: the staff API answers 401 straight away", api.status === 401, String(api.status));
+    const pr = await ctx.newPage();
+    await pr.goto(`${BASE}/staff`, { waitUntil: "domcontentloaded" });
+    check("deactivated: the board is closed to them", await leftLogin(pr));
+    await ctx.close();
   });
 
   check("no uncaught page errors during the run", errors.length === 0, errors.slice(0, 2).join(" | ").slice(0, 160));

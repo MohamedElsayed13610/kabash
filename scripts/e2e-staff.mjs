@@ -103,6 +103,7 @@ try {
     await login(p, u);
     await p.waitForTimeout(2500);
     await p.goto(`${BASE}/staff`, { waitUntil: "domcontentloaded" });
+    await p.waitForURL((u) => u.pathname.startsWith("/staff/login"), { timeout: 15000 }).catch(() => {}); // the redirect streams in behind the loading skeleton
     check(`${u.label}: valid login but no active staff profile -> kept out of the board`, p.url().includes("/staff/login") && (await p.getByText("مش متفعل كموظف").isVisible().catch(() => false)), p.url());
     await c.close();
   }
@@ -113,7 +114,7 @@ try {
   page.on("pageerror", (e) => jsErrors.push(e.message));
   await login(page, cashier);
   await page.waitForURL((u) => /^\/(staff|admin)\/?$/.test(u.pathname), { timeout: 20000 }); // cashier -> /staff, owner/manager -> /admin
-  check("cashier signs in and reaches the board", await page.getByText("الطلبات", { exact: true }).first().isVisible({ timeout: 15000 }));
+  check("cashier signs in and reaches the board", await page.getByRole("heading", { name: "الطلبات", exact: true }).waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
   check("realtime connects ('مباشر')", await page.locator("[data-testid=live][data-live=true]").waitFor({ timeout: 15000 }).then(() => true).catch(() => false));
   check("sound button shown until tapped", await page.getByTestId("enable-sound").isVisible());
   await page.screenshot({ path: `${SHOTS}/staff-1-empty.png` });
@@ -268,6 +269,7 @@ try {
     await admin.from("profiles").update({ active: false }).eq("user_id", cashier.id);
     check("deactivated staff: API -> 401 straight away", (await call("GET", "/api/staff/summary", null, { cookie })).status === 401);
     const pr = await ctx.newPage(); await pr.goto(`${BASE}/staff`, { waitUntil: "domcontentloaded" });
+    await pr.waitForURL((u) => u.pathname.startsWith("/staff/login"), { timeout: 15000 }).catch(() => {});
     check("deactivated staff: board is closed to them", pr.url().includes("/staff/login"));
     await pr.close();
     await admin.from("profiles").update({ active: true }).eq("user_id", cashier.id);

@@ -52,7 +52,7 @@ export default async function Home() {
             <h2 id="offers-h" className="font-display text-4xl text-forest">
               عروض النهارده
             </h2>
-            <Link href="/offers" className="text-forest underline underline-offset-4">
+            <Link href="/offers" className="inline-flex min-h-11 items-center px-1 text-forest underline underline-offset-4">
               كل العروض
             </Link>
           </Reveal>

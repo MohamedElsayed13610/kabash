@@ -52,7 +52,10 @@ for (const [label, path] of [["Home", "/"], ["Menu", "/menu"], ["Butcher", "/but
 
 // states that only exist after interaction: item sheet, butcher weight scale, cart sheet, checkout with items
 await open("/menu");
-await page.getByRole("button", { name: "اختار حجم مندي لحم" }).first().click();
+// whatever the owner's menu holds today: an item with sizes if there is one, otherwise the first dish
+const sized = page.getByRole("button", { name: /^اختار حجم/ });
+if (await sized.count()) await sized.first().click();
+else await page.locator("main h3 button").first().click();
 await page.waitForTimeout(900);
 add(await scan(page, "Item sheet (sizes + extras)"));
 await page.keyboard.press("Escape");
