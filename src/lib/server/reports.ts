@@ -46,23 +46,27 @@ export async function getReport(days: number, now = new Date()): Promise<Report>
   const db = createSupabaseAdmin();
   const start = cairoDayStart(new Date(now.getTime() - (days - 1) * 86_400_000));
 
-  const orders = await fetchAll<{ id: string; status: string; created_at: string; total_estimate: number; total_final: number | null }>((a, b) =>
-    db.from("orders").select("id, status, created_at, total_estimate, total_final").gte("created_at", start.toISOString()).order("created_at").range(a, b),
-  );
+  const sinceIso = start.toISOString();
+  type OrderRow = { id: string; status: string; created_at: string; total_estimate: number; total_final: number | null };
+  type LineRow = { order_id: string; kind: "restaurant" | "butcher"; name_snapshot: string; unit: "piece" | "kg"; qty_requested: number; qty_final: number | null; line_total_estimate: number; line_total_final: number | null; orders: { status: string } };
+
+  // Two queries, side by side (the lines are filtered through their order, so no second step is needed).
+  const [orders, lines] = await Promise.all([
+    fetchAll<OrderRow>((a, b) =>
+      db.from("orders").select("id, status, created_at, total_estimate, total_final").gte("created_at", sinceIso).order("created_at").range(a, b),
+    ),
+    fetchAll<LineRow>((a, b) =>
+      db
+        .from("order_items")
+        .select("order_id, kind, name_snapshot, unit, qty_requested, qty_final, line_total_estimate, line_total_final, orders!inner(status, created_at)")
+        .gte("orders.created_at", sinceIso)
+        .neq("orders.status", "cancelled")
+        .range(a, b) as unknown as PromiseLike<{ data: LineRow[] | null; error: { message: string } | null }>,
+    ),
+  ]);
 
   const live = orders.filter((o) => o.status !== "cancelled");
   const deliveredIds = new Set(live.filter((o) => o.status === "delivered").map((o) => o.id));
-  const liveIds = live.map((o) => o.id);
-
-  const lines: { order_id: string; kind: "restaurant" | "butcher"; name_snapshot: string; unit: "piece" | "kg"; qty_requested: number; qty_final: number | null; line_total_estimate: number; line_total_final: number | null }[] = [];
-  for (let i = 0; i < liveIds.length; i += 200) {
-    const chunk = liveIds.slice(i, i + 200);
-    lines.push(
-      ...(await fetchAll((a, b) =>
-        db.from("order_items").select("order_id, kind, name_snapshot, unit, qty_requested, qty_final, line_total_estimate, line_total_final").in("order_id", chunk).range(a, b),
-      )),
-    );
-  }
 
   // every day in the range appears, even with zero orders
   const daily = new Map<string, DayPoint>();

@@ -10,9 +10,10 @@ import { ar } from "@/messages/ar";
 interface Todo { text: string; href: string; tone?: "warn" | "info" }
 
 export default async function AdminHome() {
-  const me = await adminPage(["owner", "manager"]);
   const db = createSupabaseAdmin();
-  const [summary, items, zones, offers, settingsRes, staff] = await Promise.all([
+  // the role check (shared with the layout) and every query run side by side
+  const [me, summary, items, zones, offers, settingsRes, staff] = await Promise.all([
+    adminPage(["owner", "manager"]),
     getDailySummary(),
     db.from("items").select("id, is_sample, image_url, active"),
     db.from("delivery_zones").select("id, is_sample, active"),

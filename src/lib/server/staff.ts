@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createSupabaseAdmin, createSupabaseServer } from "@/lib/supabase/server";
 import { ApiError } from "./order-service";
 
@@ -11,21 +12,27 @@ export interface Staff {
 }
 
 /**
- * The signed-in, ACTIVE staff member, or null. getUser() re-validates the session token with
- * Supabase (unlike getSession), and the role comes from the profiles table, never from the browser.
+ * The signed-in, ACTIVE staff member, or null.
+ *
+ * Identity: getClaims() verifies the session token's signature and expiry LOCALLY (ES256 keys, no network call).
+ * Authorization: the role and the `active` flag are read from the profiles table on EVERY request, so stopping an
+ * account or changing a role takes effect immediately. The browser is never trusted for either.
+ *
+ * Wrapped in React cache(): the admin layout and the page share one lookup per request instead of repeating it.
  */
-export async function getStaff(): Promise<Staff | null> {
+export const getStaff = cache(async (): Promise<Staff | null> => {
   const supa = await createSupabaseServer();
-  const { data } = await supa.auth.getUser();
-  if (!data.user) return null;
+  const { data } = await supa.auth.getClaims();
+  const userId = data?.claims?.sub;
+  if (!userId) return null;
   const { data: p } = await createSupabaseAdmin()
     .from("profiles")
     .select("name, role, active")
-    .eq("user_id", data.user.id)
+    .eq("user_id", userId)
     .maybeSingle();
   if (!p || !p.active) return null;
-  return { userId: data.user.id, name: p.name, role: p.role };
-}
+  return { userId, name: p.name, role: p.role };
+});
 
 /** For API routes: 401 if not staff, 403 if the role is not allowed. */
 export async function requireStaff(allowed: StaffRole[] = ["owner", "manager", "cashier"]): Promise<Staff> {

@@ -3,9 +3,9 @@ import { adminPage } from "@/lib/server/admin-page";
 import { createSupabaseAdmin } from "@/lib/supabase/server";
 
 export default async function AdminStaffPage() {
-  const me = await adminPage(["owner"]);
   const db = createSupabaseAdmin();
-  const [{ data: profiles, error }, users] = await Promise.all([
+  const [me, { data: profiles, error }, users] = await Promise.all([
+    adminPage(["owner"]),
     db.from("profiles").select("user_id, name, role, active, created_at").order("created_at"),
     db.auth.admin.listUsers({ perPage: 200 }),
   ]);

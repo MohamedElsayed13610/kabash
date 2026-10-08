@@ -22,11 +22,14 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
+  // getClaims() verifies the token's signature locally (no network round trip). Each page and API route
+  // still checks the profile's role and active flag in the database.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? { id: data.claims.sub } : null;
   const { pathname } = request.nextUrl;
   const isPage = pathname.startsWith("/staff") || pathname.startsWith("/admin");
 
-  if (isPage && !data.user && pathname !== "/staff/login") {
+  if (isPage && !user && pathname !== "/staff/login") {
     const url = request.nextUrl.clone();
     url.pathname = "/staff/login";
     url.search = "";

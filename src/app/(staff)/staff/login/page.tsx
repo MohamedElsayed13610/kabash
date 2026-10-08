@@ -8,6 +8,6 @@ export const dynamic = "force-dynamic";
 export default async function StaffLogin() {
   if (await getStaff()) redirect("/staff");
   // signed in with an account that has no active staff profile
-  const { data } = await (await createSupabaseServer()).auth.getUser();
-  return <LoginForm signedInButNotStaff={!!data.user} />;
+  const { data } = await (await createSupabaseServer()).auth.getClaims();
+  return <LoginForm signedInButNotStaff={!!data?.claims?.sub} />;
 }

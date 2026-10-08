@@ -32,19 +32,16 @@ const r2 = (n: number) => Math.round(n * 100) / 100;
 export async function getDailySummary(now = new Date()): Promise<DailySummary> {
   const since = cairoDayStart(now).toISOString();
   const db = createSupabaseAdmin();
-  const { data: orders } = await db
-    .from("orders")
-    .select("id, status, total_estimate, total_final")
-    .gte("created_at", since);
-
+  // Orders and their lines in parallel (lines are filtered through their order).
+  const [{ data: orders }, { data: lines }] = await Promise.all([
+    db.from("orders").select("id, status, total_estimate, total_final").gte("created_at", since),
+    db
+      .from("order_items")
+      .select("order_id, kind, name_snapshot, unit, qty_requested, qty_final, line_total_estimate, line_total_final, orders!inner(created_at, status)")
+      .gte("orders.created_at", since)
+      .neq("orders.status", "cancelled"),
+  ]);
   const live = (orders ?? []).filter((o) => o.status !== "cancelled");
-  const ids = live.map((o) => o.id);
-  const { data: lines } = ids.length
-    ? await db
-        .from("order_items")
-        .select("order_id, kind, name_snapshot, unit, qty_requested, qty_final, line_total_estimate, line_total_final")
-        .in("order_id", ids)
-    : { data: [] as never[] };
 
   const deliveredIds = new Set(live.filter((o) => o.status === "delivered").map((o) => o.id));
   const top = new Map<string, { name: string; unit: "piece" | "kg"; qty: number; revenue: number }>();
