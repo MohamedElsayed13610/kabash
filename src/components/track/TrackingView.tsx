@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import * as m from "motion/react-m";
 import { Scene, type SceneKey } from "./Scene";
+import { EmptyTray } from "../ui/EmptyTray";
 import { RollingNumber } from "../ui/RollingNumber";
 import { isTerminal, stageOf, type OrderStatus, type TrackingData } from "@/lib/tracking-types";
 import { formatKg, formatMoney } from "@/lib/format";
@@ -269,12 +270,18 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
 
   if (problem === "notfound") {
     return (
-      <div className="mx-auto max-w-xl px-5 py-20 text-center">
-        <h1 className="font-display text-4xl text-forest">مش لاقيين الطلب ده</h1>
+      <div className="mx-auto max-w-xl px-5 py-16 text-center">
+        <EmptyTray />
+        <h1 className="mt-4 font-display text-4xl text-forest">مش لاقيين الطلب ده</h1>
         <p className="mt-2 text-charcoal/75">اتأكد من الكود ({code}) وجرب تاني. الكود 6 حروف وأرقام.</p>
-        <Link href="/menu" className="mt-6 inline-grid h-12 place-items-center rounded-full bg-ember px-7 font-display text-xl text-ivory">
-          المنيو
-        </Link>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Link href="/track" className="inline-grid min-h-12 place-items-center rounded-full bg-ember px-7 font-display text-xl text-ivory">
+            جرب كود تاني
+          </Link>
+          <Link href="/menu" className="inline-grid min-h-12 place-items-center rounded-full border-2 border-forest px-7 font-display text-xl text-forest">
+            المنيو
+          </Link>
+        </div>
       </div>
     );
   }

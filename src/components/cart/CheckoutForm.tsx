@@ -10,6 +10,7 @@ import { addRecentOrder } from "@/lib/recent-orders";
 import type { OrderTotals } from "@/lib/pricing/order";
 import { ar } from "@/messages/ar";
 import { formatKg, formatMoney } from "@/lib/format";
+import { EmptyTray } from "../ui/EmptyTray";
 
 export interface ZoneOption {
   id: string;
@@ -185,9 +186,10 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
 
   if (lines.length === 0 && !submitted.current) {
     return (
-      <div className="mx-auto max-w-xl px-5 py-20 text-center">
-        <h1 className="font-display text-4xl text-forest">الصينية فاضية</h1>
-        <p className="mt-2 text-charcoal/75">لسه مختارتش حاجة. المنيو مستنيك.</p>
+      <div className="mx-auto max-w-xl px-5 py-16 text-center">
+        <EmptyTray />
+        <h1 className="mt-4 font-display text-4xl text-forest">الصينية فاضية</h1>
+        <p className="mt-2 text-charcoal/75">لسه مختارتش حاجة. المنيو مستنيك، والنار مولّعة.</p>
         <div className="mt-6 flex justify-center gap-3">
           <Link href="/menu" className="grid h-12 place-items-center rounded-full bg-ember px-7 font-display text-xl text-ivory">
             المنيو
