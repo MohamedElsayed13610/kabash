@@ -3,13 +3,11 @@ import { ClosedNotice } from "@/components/site/OpenStatus";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { MenuView } from "@/components/menu/MenuView";
 import { PageIntro } from "@/components/menu/PageIntro";
+import { pageMeta } from "@/lib/site";
 import { getMenu, getOffers, getSettings } from "@/lib/data";
 
 export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
-export const metadata: Metadata = {
-  title: "الجزارة | كباش",
-  description: "لحوم ومصنعات فريش كل يوم. اطلب بالكيلو واحنا نقطع ونوزن على طلبك.",
-};
+export const metadata: Metadata = pageMeta("/butcher", "الجزارة | كباش", "لحوم ومصنعات فريش كل يوم. اطلب بالكيلو واحنا نقطع ونوزن على طلبك.");
 
 export default async function ButcherPage() {
   const [categories, offers, settings] = await Promise.all([getMenu("butcher"), getOffers(), getSettings()]);

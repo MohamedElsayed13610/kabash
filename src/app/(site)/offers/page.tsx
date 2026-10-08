@@ -4,15 +4,13 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { PageIntro } from "@/components/menu/PageIntro";
 import { Reveal } from "@/components/ui/Reveal";
+import { pageMeta } from "@/lib/site";
 import { getOffers, getSettings } from "@/lib/data";
 import { formatMoney } from "@/lib/format";
 import { ar } from "@/messages/ar";
 
 export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
-export const metadata: Metadata = {
-  title: "العروض | كباش",
-  description: "عروض كباش الحالية على المندي والجزارة وطلبات التوصيل.",
-};
+export const metadata: Metadata = pageMeta("/offers", "العروض | كباش", "عروض كباش الحالية على المندي والجزارة وطلبات التوصيل.");
 
 const BLOCKS = ["bg-saffron text-charcoal", "bg-ember text-ivory", "bg-forest text-ivory"];
 

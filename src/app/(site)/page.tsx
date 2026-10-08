@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Hero } from "@/components/site/Hero";
 import { OpenBadge } from "@/components/site/OpenStatus";
@@ -8,8 +9,10 @@ import { Stamp } from "@/components/ui/Stamp";
 import { getFeatured, getOffers, getSettings } from "@/lib/data";
 import { formatClock, formatMoney, price } from "@/lib/format";
 import { startingPrice } from "@/lib/pricing/unit";
+import { restaurantJsonLd, siteUrl } from "@/lib/site";
 import { ar } from "@/messages/ar";
 
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
 
 const DAYS = ["الأحد", "الإتنين", "التلات", "الأربع", "الخميس", "الجمعة", "السبت"];
@@ -32,8 +35,11 @@ export default async function Home() {
   const hasPhone = /^\d+$/.test(info.phone);
   const hasWhatsapp = /^\d+$/.test(info.whatsapp);
 
+  const jsonLd = JSON.stringify(restaurantJsonLd(settings, siteUrl())).replace(/</g, String.raw`\u003c`);
+
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <Hero settings={settings} />
       <div className="pt-20">
         <TrackSection />

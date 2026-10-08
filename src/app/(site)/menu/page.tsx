@@ -3,13 +3,11 @@ import { ClosedNotice } from "@/components/site/OpenStatus";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { MenuView } from "@/components/menu/MenuView";
 import { PageIntro } from "@/components/menu/PageIntro";
+import { pageMeta } from "@/lib/site";
 import { getMenu, getOffers, getSettings } from "@/lib/data";
 
 export const revalidate = 300; // safety net only: admin changes expire the cache tags at once
-export const metadata: Metadata = {
-  title: "المنيو | كباش",
-  description: "مندي، مدفون، برياني، مضغوط، وصواني ومشاوي. اطلب من كباش لحد باب بيتك.",
-};
+export const metadata: Metadata = pageMeta("/menu", "المنيو | كباش", "مندي، مدفون، برياني، مضغوط، وصواني ومشاوي. اطلب من كباش لحد باب بيتك.");
 
 export default async function MenuPage() {
   const [categories, offers, settings] = await Promise.all([getMenu("restaurant"), getOffers(), getSettings()]);
