@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { timedFetch } from "./lib/timed-fetch";
 
 /**
  * Keeps the Supabase session cookie fresh and sends signed-out visitors to the login page.
@@ -7,8 +8,10 @@ import { NextResponse, type NextRequest } from "next/server";
  */
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
+  if (process.env.SUPABASE_TIMING === "1") console.log(`[req] ${request.method} ${request.nextUrl.pathname}${request.headers.get("rsc") ? " (rsc)" : ""}`);
 
   const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { fetch: timedFetch },
     cookies: {
       getAll: () => request.cookies.getAll(),
       setAll: (list) => {

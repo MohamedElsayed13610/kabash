@@ -1,0 +1,91 @@
+{
+  "label": "before",
+  "at": "2026-10-08T06:50:58.050Z",
+  "supabaseRttMs": 148,
+  "public": {
+    "/": {
+      "cold": 27,
+      "warm": 7,
+      "status": 200
+    },
+    "/menu": {
+      "cold": 8,
+      "warm": 7,
+      "status": 200
+    },
+    "/butcher": {
+      "cold": 8,
+      "warm": 7,
+      "status": 200
+    },
+    "/offers": {
+      "cold": 5,
+      "warm": 5,
+      "status": 200
+    },
+    "/checkout": {
+      "cold": 198,
+      "warm": 193,
+      "status": 200
+    }
+  },
+  "admin": {
+    "/admin": {
+      "cold": 2148,
+      "warm": 1936,
+      "status": 200
+    },
+    "/admin/menu": {
+      "cold": 1316,
+      "warm": 1380,
+      "status": 200
+    },
+    "/admin/zones": {
+      "cold": 2067,
+      "warm": 1566,
+      "status": 200
+    },
+    "/admin/offers": {
+      "cold": 1340,
+      "warm": 2856,
+      "status": 200
+    },
+    "/admin/reports": {
+      "cold": 4615,
+      "warm": 4088,
+      "status": 200
+    }
+  },
+  "adminNav": {
+    "requestMs": 3551,
+    "supabaseCalls": 7,
+    "calls": [
+      "end=184668ms took=474ms GET /auth/v1/user",
+      "end=186086ms took=1396ms GET /auth/v1/user",
+      "end=186575ms took=475ms GET /auth/v1/user",
+      "end=186575ms took=474ms GET /auth/v1/user",
+      "end=186709ms took=132ms GET /rest/v1/profiles?select=name%2Crole%2Cactive&user_id=eq.e566b0af-e336-454a-9b2b-03f1e6",
+      "end=186710ms took=132ms GET /rest/v1/profiles?select=name%2Crole%2Cactive&user_id=eq.e566b0af-e336-454a-9b2b-03f1e6",
+      "end=187726ms took=1015ms GET /rest/v1/categories?select=*%2Citems%28*%2Citem_variants%28*%29%2Citem_extras%28*%29%29&o"
+    ]
+  },
+  "adminTapMs": {
+    "first": 1515,
+    "all": [
+      1515,
+      2881,
+      1350,
+      1333,
+      1366,
+      1343
+    ],
+    "warmMedian": 1343
+  },
+  "publicTapMs": {
+    "/menu": 155,
+    "/butcher": 114,
+    "/offers": 110,
+    "/menu#2": 112
+  },
+  "slowPhoneMenuLoadMs": 2261
+}

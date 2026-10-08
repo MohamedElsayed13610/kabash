@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { timedFetch } from "./timed-fetch";
 import type { Category, CategoryType, Item, Offer, SiteSettings } from "./types";
 
 // Public, cookie-free client: lets pages be statically rendered and revalidated.
@@ -6,6 +7,7 @@ import type { Category, CategoryType, Item, Offer, SiteSettings } from "./types"
 const db = () =>
   createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
     auth: { persistSession: false },
+    global: { fetch: timedFetch },
   });
 
 const bySort = <T extends { sort: number }>(a: T, b: T) => a.sort - b.sort;

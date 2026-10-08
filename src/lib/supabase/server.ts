@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { timedFetch } from "../timed-fetch";
 
 /** Cookie-aware client: runs as the signed-in staff user (RLS applies). */
 export async function createSupabaseServer() {
@@ -9,6 +10,7 @@ export async function createSupabaseServer() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { fetch: timedFetch },
       cookies: {
         getAll: () => store.getAll(),
         setAll: (list) => {
@@ -27,5 +29,6 @@ export async function createSupabaseServer() {
 export function createSupabaseAdmin() {
   return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
+    global: { fetch: timedFetch },
   });
 }
