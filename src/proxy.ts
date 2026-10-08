@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { timedFetch } from "./lib/timed-fetch";
+import { safeNext } from "./lib/safe-redirect";
 
 /**
  * Keeps the Supabase session cookie fresh and sends signed-out visitors to the login page.
@@ -31,8 +32,9 @@ export async function proxy(request: NextRequest) {
 
   if (isPage && !user && pathname !== "/staff/login") {
     const url = request.nextUrl.clone();
+    const wanted = safeNext(pathname + request.nextUrl.search);
     url.pathname = "/staff/login";
-    url.search = "";
+    url.search = wanted ? `?next=${encodeURIComponent(wanted)}` : "";
     return NextResponse.redirect(url);
   }
   return response;

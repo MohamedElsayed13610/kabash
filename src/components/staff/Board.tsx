@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import { boardFilter, ORDER_SELECT, type BoardOrder } from "@/lib/staff-types";
@@ -219,6 +220,11 @@ export function Board({
               <span className={`size-2.5 rounded-full ${live ? "bg-leaf" : "bg-saffron"}`} aria-hidden />
               {live ? "مباشر" : "بيتصل…"}
             </span>
+            {staff.role !== "cashier" && (
+              <Link href="/admin" data-testid="to-admin" className="grid h-11 place-items-center rounded-full bg-saffron px-4 text-sm font-bold text-charcoal">
+                لوحة التحكم
+              </Link>
+            )}
             <button onClick={logout} className="h-11 rounded-full border border-leaf/50 px-4 text-sm">
               خروج
             </button>

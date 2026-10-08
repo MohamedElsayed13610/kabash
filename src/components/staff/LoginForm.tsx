@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 
-export function LoginForm({ signedInButNotStaff }: { signedInButNotStaff: boolean }) {
+export function LoginForm({ signedInButNotStaff, next }: { signedInButNotStaff: boolean; next: string | null }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(
     signedInButNotStaff ? "الحساب ده مش متفعل كموظف. كلم صاحب المطعم." : null,
@@ -31,7 +31,8 @@ export function LoginForm({ signedInButNotStaff }: { signedInButNotStaff: boolea
       setBusy(false);
       return;
     }
-    router.replace("/staff");
+    // /staff/go decides the landing page from the role in the database and re-validates the return path
+    router.replace(next ? `/staff/go?next=${encodeURIComponent(next)}` : "/staff/go");
     router.refresh();
   }
 
