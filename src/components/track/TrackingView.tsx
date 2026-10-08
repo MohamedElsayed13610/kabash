@@ -90,7 +90,7 @@ function Timeline({ data }: { data: TrackingData }) {
               animate={{ scale: current ? 1.15 : 1 }}
               transition={{ type: "spring", damping: 12, stiffness: 300 }}
               className={`relative z-10 grid size-10 shrink-0 place-items-center rounded-full border-4 border-ivory font-display text-lg ${
-                done ? "bg-forest text-ivory" : current ? "bg-ember text-ivory" : "bg-charcoal/15 text-charcoal/50"
+                done ? "bg-forest text-ivory" : current ? "bg-ember text-ivory" : "bg-charcoal/15 text-charcoal/70"
               }`}
             >
               {done ? (
@@ -103,11 +103,11 @@ function Timeline({ data }: { data: TrackingData }) {
               {current && <span aria-hidden className="ripple absolute inset-0 rounded-full border-2 border-ember" />}
             </m.span>
             <div className="pt-1">
-              <p className={`font-display text-2xl leading-tight ${done || current ? "text-charcoal" : "text-charcoal/45"}`}>{s.title}</p>
+              <p className={`font-display text-2xl leading-tight ${done || current ? "text-charcoal" : "text-charcoal/70"}`}>{s.title}</p>
               {k === 0 && s.sub && (stage >= 0) && (
                 <p className="text-sm text-charcoal/70">{data.status === "new" ? s.sub.new : s.sub.accepted}</p>
               )}
-              {at && (done || current) && <p className="text-sm tabular-nums text-charcoal/60">{clock(at)}</p>}
+              {at && (done || current) && <p className="text-sm tabular-nums text-charcoal/70">{clock(at)}</p>}
             </div>
           </li>
         );
@@ -130,7 +130,7 @@ function Summary({ data }: { data: TrackingData }) {
               <div className="flex items-baseline justify-between gap-3">
                 <span>
                   {l.name}
-                  <span className="ms-2 text-sm text-charcoal/65">
+                  <span className="ms-2 text-sm text-charcoal/70">
                     {l.unit === "kg" ? formatKg(l.qtyRequested) : `×${l.qtyRequested}`}
                     {l.variant ? ` · ${l.variant}` : ""}
                   </span>
@@ -139,16 +139,16 @@ function Summary({ data }: { data: TrackingData }) {
                   {isFinal ? (
                     <>
                       <b className="text-forest">{formatMoney(l.lineFinal!)}</b>
-                      <s className="text-sm text-charcoal/50">{formatMoney(l.lineEstimate)}</s>
+                      <s className="text-sm text-charcoal/70">{formatMoney(l.lineEstimate)}</s>
                     </>
                   ) : (
                     formatMoney(l.lineEstimate)
                   )}
                 </span>
               </div>
-              {l.extras.length > 0 && <p className="text-sm text-charcoal/65">+ {l.extras.join("، ")}</p>}
+              {l.extras.length > 0 && <p className="text-sm text-charcoal/70">+ {l.extras.join("، ")}</p>}
               {l.unit === "kg" && (
-                <p className="text-sm text-charcoal/65">
+                <p className="text-sm text-charcoal/70">
                   {isFinal ? (
                     <>الوزن الفعلي بعد التقطيع: <b className="text-forest">{formatKg(l.qtyFinal!)}</b></>
                   ) : (
@@ -184,7 +184,7 @@ function Summary({ data }: { data: TrackingData }) {
           </dd>
         </div>
         {final !== null && final !== data.totalEstimate && (
-          <div className="flex justify-between text-sm text-charcoal/65">
+          <div className="flex justify-between text-sm text-charcoal/70">
             <dt>كان تقديريًا</dt>
             <dd className="tabular-nums line-through">{formatMoney(data.totalEstimate)} {ar.currency}</dd>
           </div>
@@ -270,7 +270,7 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
   if (problem === "notfound") {
     return (
       <div className="mx-auto max-w-xl px-5 py-20 text-center">
-        <p className="font-display text-4xl text-forest">مش لاقيين الطلب ده</p>
+        <h1 className="font-display text-4xl text-forest">مش لاقيين الطلب ده</h1>
         <p className="mt-2 text-charcoal/75">اتأكد من الكود ({code}) وجرب تاني. الكود 6 حروف وأرقام.</p>
         <Link href="/menu" className="mt-6 inline-grid h-12 place-items-center rounded-full bg-ember px-7 font-display text-xl text-ivory">
           المنيو
@@ -282,6 +282,7 @@ export function TrackingView({ code, whatsapp, phone }: { code: string; whatsapp
   if (!data) {
     return (
       <div className="mx-auto max-w-xl px-5 py-10" aria-busy="true">
+        <h1 className="sr-only">تتبع طلبك</h1>
         <div className="mx-auto size-60 animate-pulse rounded-full bg-forest/15" />
         <p className="mt-6 text-center text-charcoal/70">
           {problem === "network" ? "مفيش اتصال بالإنترنت. هنحاول تاني لوحدنا." : problem === "limited" ? "طلبات كتير. هنحاول تاني كمان شوية." : "بنجيب طلبك…"}

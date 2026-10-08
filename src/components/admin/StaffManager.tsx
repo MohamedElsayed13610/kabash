@@ -135,7 +135,7 @@ export function StaffManager({ staff, meId }: { staff: StaffRow[]; meId: string 
                 <div className="min-w-0">
                   <h2 className="font-display text-2xl leading-tight">{s.name} {me && <span className="rounded bg-forest px-2 py-0.5 align-middle font-body text-xs text-ivory">أنت</span>}</h2>
                   <p className="truncate text-sm text-charcoal/70" dir="ltr">{s.email}</p>
-                  <p className="text-xs text-charcoal/50">
+                  <p className="text-xs text-charcoal/70">
                     آخر دخول: {s.last_sign_in ? new Date(s.last_sign_in).toLocaleString("ar-EG-u-nu-latn", { timeZone: "Africa/Cairo", dateStyle: "short", timeStyle: "short" }) : "لسه"}
                   </p>
                 </div>

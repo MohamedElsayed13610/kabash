@@ -209,7 +209,7 @@ export function Board({
           <div className="flex items-center gap-3">
             <Image src="/brand/logo.png" alt="" width={40} height={40} className="size-10" />
             <div className="leading-tight">
-              <p className="font-display text-2xl">الطلبات</p>
+              <h1 className="font-display text-2xl">الطلبات</h1>
               <p className="text-xs text-ivory/75">
                 {staff.name} · {ROLE_LABEL[staff.role]}
               </p>
@@ -310,7 +310,7 @@ export function Board({
 
             <div className="mt-4 space-y-4" aria-live="polite">
               {list.length === 0 && (
-                <p className="py-16 text-center text-lg text-charcoal/60">
+                <p className="py-16 text-center text-lg text-charcoal/70">
                   {tab === "new" ? "مفيش طلبات جديدة. أول ما يجي طلب هترن الصفحة." : "مفيش طلبات هنا."}
                 </p>
               )}

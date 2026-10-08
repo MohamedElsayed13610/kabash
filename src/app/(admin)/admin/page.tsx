@@ -50,7 +50,7 @@ export default async function AdminHome() {
 
   const tile = (label: string, value: string, tone = "text-forest") => (
     <div className="rounded-2xl bg-white p-4">
-      <dt className="text-sm text-charcoal/65">{label}</dt>
+      <dt className="text-sm text-charcoal/70">{label}</dt>
       <dd className={`font-display text-4xl ${tone}`}>{value}</dd>
     </div>
   );

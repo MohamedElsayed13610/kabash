@@ -97,9 +97,9 @@ function BarChart({ bars, fmt, name }: { bars: Bar[]; fmt: (v: number) => string
 function Tile({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
     <div className="rounded-2xl bg-white p-4">
-      <dt className="text-sm text-charcoal/65">{label}</dt>
+      <dt className="text-sm text-charcoal/70">{label}</dt>
       <dd className="font-display text-4xl leading-tight text-forest">{value}</dd>
-      {sub && <p className="text-xs text-charcoal/55">{sub}</p>}
+      {sub && <dd className="text-xs text-charcoal/70">{sub}</dd>}
     </div>
   );
 }
@@ -141,7 +141,7 @@ export function ReportsView({ report }: { report: Report }) {
           {table ? "عرض الرسم" : "عرض كجدول"}
         </button>
       </div>
-      <p className="mt-2 text-sm text-charcoal/60">بتوقيت القاهرة. الإيراد = الطلبات اللي اتسلمت، بالسعر النهائي بعد وزن اللحوم. الطلبات الملغية مش محسوبة.</p>
+      <p className="mt-2 text-sm text-charcoal/70">بتوقيت القاهرة. الإيراد = الطلبات اللي اتسلمت، بالسعر النهائي بعد وزن اللحوم. الطلبات الملغية مش محسوبة.</p>
 
       <dl className="mt-4 grid grid-cols-2 gap-3" data-testid="report-totals">
         <Tile label="عدد الطلبات" value={String(t.orders)} sub={t.cancelled ? `+ ${t.cancelled} ملغي` : undefined} />
@@ -192,7 +192,7 @@ export function ReportsView({ report }: { report: Report }) {
       <section className="mt-4 rounded-2xl bg-white p-4" aria-label="المطعم والجزارة">
         <h2 className="font-display text-2xl">المطعم والجزارة</h2>
         {splitTotal === 0 ? (
-          <p className="py-3 text-charcoal/60">لسه مفيش طلبات اتسلمت في الفترة دي.</p>
+          <p className="py-3 text-charcoal/70">لسه مفيش طلبات اتسلمت في الفترة دي.</p>
         ) : (
           <>
             <div className="mt-3 flex h-9 gap-[2px] overflow-hidden rounded-lg" role="img" aria-label={`المطعم ${pct(report.split.restaurant)}% والجزارة ${pct(report.split.butcher)}%`} dir="ltr">
@@ -222,7 +222,7 @@ export function ReportsView({ report }: { report: Report }) {
       <section className="mt-4 rounded-2xl bg-white p-4" aria-label="الأكتر مبيعًا">
         <h2 className="font-display text-2xl">الأكتر مبيعًا</h2>
         {report.topItems.length === 0 ? (
-          <p className="py-3 text-charcoal/60">لسه مفيش طلبات في الفترة دي.</p>
+          <p className="py-3 text-charcoal/70">لسه مفيش طلبات في الفترة دي.</p>
         ) : (
           <ol className="mt-2 space-y-3" data-testid="top-items">
             {report.topItems.map((i, idx) => (
@@ -231,7 +231,7 @@ export function ReportsView({ report }: { report: Report }) {
                   <span>
                     <span className="me-2 font-display text-xl text-ember">{idx + 1}</span>
                     {i.name}
-                    <span className="ms-2 text-sm text-charcoal/60">{i.unit === "kg" ? formatKg(i.qty) : `×${i.qty}`}</span>
+                    <span className="ms-2 text-sm text-charcoal/70">{i.unit === "kg" ? formatKg(i.qty) : `×${i.qty}`}</span>
                   </span>
                   <span className="tabular-nums">{formatMoney(i.revenue)} {ar.currency}</span>
                 </div>

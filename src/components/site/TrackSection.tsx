@@ -49,12 +49,12 @@ function OrderRow({ o, onRemove }: { o: RecentOrder; onRemove: () => void }) {
           <span className="font-display text-3xl tracking-widest text-ember" dir="ltr">
             {o.code}
           </span>
-          <span className="text-sm text-charcoal/60">
+          <span className="text-sm text-charcoal/70">
             {ago(o.at)} · {formatMoney(o.total)} {ar.currency}
           </span>
         </span>
         <span className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span data-testid="order-status" className={`font-medium ${o.status === "cancelled" ? "text-charcoal/60" : "text-forest"}`}>
+          <span data-testid="order-status" className={`font-medium ${o.status === "cancelled" ? "text-charcoal/70" : "text-forest"}`}>
             {o.status ? statusLabel(o.status, o.fulfillment) : "بنجيب حالة الطلب…"}
           </span>
           {o.status && <MiniProgress status={o.status} />}
@@ -63,7 +63,7 @@ function OrderRow({ o, onRemove }: { o: RecentOrder; onRemove: () => void }) {
       <Link href={`/order/${o.code}`} className={`grid h-11 shrink-0 place-items-center rounded-full px-5 font-medium ${done ? "border-2 border-forest text-forest" : "bg-forest text-ivory"}`}>
         تتبع
       </Link>
-      <button onClick={onRemove} aria-label={`شيل ${o.code} من القائمة`} className="grid size-11 shrink-0 place-items-center text-xl text-charcoal/45">
+      <button onClick={onRemove} aria-label={`شيل ${o.code} من القائمة`} className="grid size-11 shrink-0 place-items-center text-xl text-charcoal/70">
         ×
       </button>
     </li>
@@ -118,9 +118,15 @@ export function TrackSection({ limit = 3, as = "section" }: { limit?: number; as
   return (
     <section className="mx-auto max-w-xl px-5" aria-labelledby="track-h" data-testid="track-section">
       <Reveal>
-        <h2 id="track-h" className={`font-display text-forest ${as === "page" ? "text-5xl" : "text-4xl"}`}>
-          تتبع طلبك
-        </h2>
+        {as === "page" ? (
+          <h1 id="track-h" className="font-display text-5xl text-forest">
+            تتبع طلبك
+          </h1>
+        ) : (
+          <h2 id="track-h" className="font-display text-4xl text-forest">
+            تتبع طلبك
+          </h2>
+        )}
         <div className="sadu mt-1 h-2 w-32 text-leaf" aria-hidden />
       </Reveal>
 

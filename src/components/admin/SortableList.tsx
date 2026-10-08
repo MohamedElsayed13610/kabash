@@ -45,7 +45,7 @@ function Row<T extends { id: string }>({
             type="button"
             aria-label="اسحب لتغيير الترتيب"
             onPointerDown={(e) => controls.start(e)}
-            className="grid size-11 shrink-0 cursor-grab touch-none place-items-center rounded-full text-xl text-charcoal/60"
+            className="grid size-11 shrink-0 cursor-grab touch-none place-items-center rounded-full text-xl text-charcoal/70"
           >
             ⠿
           </button>

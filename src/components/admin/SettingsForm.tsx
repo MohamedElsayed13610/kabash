@@ -19,7 +19,7 @@ function Card({ title, hint, children }: { title: string; hint?: string; childre
   return (
     <section className="mt-5 rounded-2xl border-2 border-charcoal/10 bg-white p-4">
       <h2 className="font-display text-2xl">{title}</h2>
-      {hint && <p className="text-sm text-charcoal/65">{hint}</p>}
+      {hint && <p className="text-sm text-charcoal/70">{hint}</p>}
       <div className="mt-3 space-y-4">{children}</div>
     </section>
   );
@@ -95,7 +95,7 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
         <div className="flex items-center justify-between gap-3 rounded-xl bg-charcoal/5 px-3 py-3">
           <div>
             <p className="font-medium">استقبال طلبات وأنت مقفول</p>
-            <p className="text-sm text-charcoal/60">لو مقفول: العميل يشوف المنيو بس مايقدرش يبعت طلب</p>
+            <p className="text-sm text-charcoal/70">لو مقفول: العميل يشوف المنيو بس مايقدرش يبعت طلب</p>
           </div>
           <Switch label="استقبال طلبات وأنت مقفول" checked={acceptClosed} onChange={setAcceptClosed} />
         </div>
@@ -118,7 +118,7 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
                 <span className="w-16 font-medium">{DAYS[d]}</span>
                 <Switch label={`${DAYS[d]} مفتوح`} checked={!day.closed} onChange={(v) => setDay(i, { closed: !v })} />
                 {day.closed ? (
-                  <span className="text-charcoal/60">أجازة</span>
+                  <span className="text-charcoal/70">أجازة</span>
                 ) : (
                   <span className="flex items-center gap-2" dir="ltr">
                     <input type="time" aria-label={`${DAYS[d]} وقت الفتح`} value={day.open} onChange={(e) => setDay(i, { open: e.target.value })} className={`${inputCls} !w-32`} />

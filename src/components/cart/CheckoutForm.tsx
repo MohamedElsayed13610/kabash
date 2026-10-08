@@ -186,7 +186,7 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
   if (lines.length === 0 && !submitted.current) {
     return (
       <div className="mx-auto max-w-xl px-5 py-20 text-center">
-        <p className="font-display text-4xl text-forest">الصينية فاضية</p>
+        <h1 className="font-display text-4xl text-forest">الصينية فاضية</h1>
         <p className="mt-2 text-charcoal/75">لسه مختارتش حاجة. المنيو مستنيك.</p>
         <div className="mt-6 flex justify-center gap-3">
           <Link href="/menu" className="grid h-12 place-items-center rounded-full bg-ember px-7 font-display text-xl text-ivory">
@@ -299,7 +299,7 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
         <div>
           <p className="mb-1 font-medium">الدفع</p>
           <label className="flex h-14 items-center gap-3 rounded-xl border-2 border-forest bg-forest/5 px-4">
-            <input type="radio" checked readOnly className="size-5 accent-forest" />
+            <input type="radio" checked readOnly aria-label="كاش عند الاستلام" className="size-5 accent-forest" />
             <span>كاش عند الاستلام</span>
           </label>
         </div>
@@ -313,7 +313,7 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
             <li key={i} className="flex items-baseline justify-between gap-3 py-2">
               <span>
                 {l.name}
-                <span className="ms-2 text-sm text-charcoal/65">
+                <span className="ms-2 text-sm text-charcoal/70">
                   {l.unit === "kg" ? formatKg(l.qty) : `×${l.qty}`}
                   {l.variant ? ` · ${l.variant.name}` : ""}
                 </span>
@@ -323,7 +323,7 @@ export function CheckoutForm({ zones }: { zones: ZoneOption[] }) {
             </li>
           ))}
         </ul>
-        {!totals && !quoteError && <p className="py-4 text-charcoal/60">بنحسب الإجمالي…</p>}
+        {!totals && !quoteError && <p className="py-4 text-charcoal/70">بنحسب الإجمالي…</p>}
         {quoteError && (
           <p role="alert" className="py-3 font-medium text-ember">
             {quoteError}

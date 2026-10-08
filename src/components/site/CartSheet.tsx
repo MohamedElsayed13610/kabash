@@ -25,13 +25,13 @@ export function CartSheet() {
                 <div className="min-w-0 flex-1">
                   <p className="font-display text-xl leading-tight">{l.name}</p>
                   {(l.variantName || l.extraNames.length > 0) && (
-                    <p className="text-sm text-charcoal/65">
+                    <p className="text-sm text-charcoal/70">
                       {[l.variantName, ...l.extraNames].filter(Boolean).join(" · ")}
                     </p>
                   )}
                   <p className="mt-0.5 font-display text-lg text-ember">
                     {formatMoney(lineTotal(l.unitPrice, l.qty))} {ar.currency}
-                    {l.unit === "kg" && <span className="ms-1 font-body text-xs text-charcoal/60">تقديري</span>}
+                    {l.unit === "kg" && <span className="ms-1 font-body text-xs text-charcoal/70">تقديري</span>}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
@@ -68,7 +68,7 @@ export function CartSheet() {
                 {formatMoney(subtotal)} {ar.currency}
               </span>
             </div>
-            <p className="mt-1 text-sm text-charcoal/65">
+            <p className="mt-1 text-sm text-charcoal/70">
               {hasButcher ? ar.butcher.estimateNote : "رسوم التوصيل بتتحسب في الخطوة الجاية."}
             </p>
             <Link

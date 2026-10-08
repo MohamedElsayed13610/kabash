@@ -100,13 +100,8 @@ function RestaurantRow({
   const from = item.item_variants.length > 0;
   return (
     <li>
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={onOpen}
-        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onOpen())}
-        className="flex cursor-pointer items-center gap-4 py-4"
-      >
+      {/* The whole row can be tapped (touch convenience), but the controls are real buttons so keyboards and screen readers get them too. */}
+      <div onClick={onOpen} className="flex cursor-pointer items-center gap-4 py-4">
         <ItemArt
           name={item.name_ar}
           src={item.image_url}
@@ -116,27 +111,36 @@ function RestaurantRow({
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2">
-            <h3 className="font-display text-2xl leading-tight text-charcoal">{item.name_ar}</h3>
+            <h3 className="font-display text-2xl leading-tight text-charcoal">
+              <button type="button" onClick={(e) => { e.stopPropagation(); onOpen(); }} className="min-h-11 text-start">
+                {item.name_ar}
+              </button>
+            </h3>
             {badge && <span className="rounded bg-saffron px-2 text-sm font-bold text-charcoal">{badge}</span>}
           </div>
           {item.description_ar && <p className="line-clamp-2 text-sm text-charcoal/70">{item.description_ar}</p>}
           {item.serving_tag && <p className="mt-1 text-sm font-medium text-forest">{item.serving_tag}</p>}
           <p className="mt-1 font-display text-2xl text-ember">
-            {from && <span className="me-1 font-body text-sm text-charcoal/60">من</span>}
+            {from && <span className="me-1 font-body text-sm text-charcoal/70">من</span>}
             {price(startingPrice(item))}
-            {item.is_sample && <span className="ms-2 font-body text-xs text-charcoal/45">سعر تجريبي</span>}
+            {item.is_sample && <span className="ms-2 font-body text-xs text-charcoal/70">سعر تجريبي</span>}
           </p>
         </div>
         {item.available ? (
           hasOptions ? (
-            <span className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ember text-2xl text-ember" aria-hidden>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onOpen(); }}
+              aria-label={`اختار حجم ${item.name_ar}`}
+              className="grid size-11 shrink-0 place-items-center rounded-full border-2 border-ember text-2xl text-ember"
+            >
               +
-            </span>
+            </button>
           ) : (
             <QuickAdd item={item} onDone={onQuickAdd} />
           )
         ) : (
-          <span className="shrink-0 text-sm font-bold text-charcoal/60">خلصت</span>
+          <span className="shrink-0 text-sm font-bold text-charcoal/70">خلصت</span>
         )}
       </div>
     </li>
@@ -163,9 +167,9 @@ function ButcherTile({ item, index, badge, onOpen }: { item: Item; index: number
           <Stamp label={ar.butcher.fresh} className="scale-90" />
           <p className="mt-1 font-display text-2xl leading-none text-ember">
             {formatMoney(item.base_price)}
-            <span className="ms-1 font-body text-xs text-charcoal/65">{ar.currency} / كجم</span>
+            <span className="ms-1 font-body text-xs text-charcoal/70">{ar.currency} / كجم</span>
           </p>
-          <p className="text-xs text-charcoal/60">
+          <p className="text-xs text-charcoal/70">
             {item.available ? `من ${item.min_qty} كجم` : "خلصت النهارده"}
           </p>
         </div>

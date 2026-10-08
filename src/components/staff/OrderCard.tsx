@@ -79,7 +79,7 @@ export function OrderCard({ order: o, now, fresh, busy, onAdvance, onMute, onCan
           <p className="font-display text-4xl leading-none tracking-widest text-ember" dir="ltr">
             {o.code}
           </p>
-          <p className="mt-1 text-sm text-charcoal/65">{ago(o.created_at, now)}</p>
+          <p className="mt-1 text-sm text-charcoal/70">{ago(o.created_at, now)}</p>
         </div>
         <div className="flex flex-wrap justify-end gap-1.5 text-sm font-medium">
           <span className="rounded-full bg-forest px-3 py-1 text-ivory">{o.fulfillment === "delivery" ? "توصيل" : "استلام"}</span>
@@ -116,7 +116,7 @@ export function OrderCard({ order: o, now, fresh, busy, onAdvance, onMute, onCan
       )}
 
       <ul className="mt-3 divide-y divide-charcoal/10">
-        {o.order_items.length === 0 && <li className="py-2 text-charcoal/60">بيتحمّل الأصناف…</li>}
+        {o.order_items.length === 0 && <li className="py-2 text-charcoal/70">بيتحمّل الأصناف…</li>}
         {o.order_items.map((i) => {
           const snap = i.variant_snapshot;
           const weighed = i.kind === "butcher" && i.qty_final !== null;
@@ -130,7 +130,7 @@ export function OrderCard({ order: o, now, fresh, busy, onAdvance, onMute, onCan
                 <span className="tabular-nums">
                   {weighed ? (
                     <>
-                      <s className="me-2 text-sm text-charcoal/50">{formatMoney(i.line_total_estimate)}</s>
+                      <s className="me-2 text-sm text-charcoal/70">{formatMoney(i.line_total_estimate)}</s>
                       <b className="text-forest">{formatMoney(i.line_total_final ?? 0)}</b>
                     </>
                   ) : (
@@ -169,12 +169,12 @@ export function OrderCard({ order: o, now, fresh, busy, onAdvance, onMute, onCan
           <dd>{formatMoney(final ?? o.total_estimate)} {ar.currency}</dd>
         </div>
         {final !== null && final !== o.total_estimate && (
-          <div className="flex justify-between text-sm text-charcoal/60">
+          <div className="flex justify-between text-sm text-charcoal/70">
             <dt>كان تقديريًا</dt>
             <dd className="line-through">{formatMoney(o.total_estimate)}</dd>
           </div>
         )}
-        <p className="text-sm text-charcoal/60">كاش عند الاستلام</p>
+        <p className="text-sm text-charcoal/70">كاش عند الاستلام</p>
       </dl>
 
       {o.status === "cancelled" && o.cancel_reason && <p className="mt-2 text-sm text-ember">سبب الإلغاء: {o.cancel_reason}</p>}

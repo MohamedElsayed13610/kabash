@@ -55,7 +55,7 @@ export function Hero({ settings }: { settings: SiteSettings }) {
           >
             اطلب دلوقتي
           </Link>
-          <Link href="/butcher" className="text-lg underline decoration-leaf decoration-2 underline-offset-8">
+          <Link href="/butcher" className="inline-flex min-h-11 items-center px-2 text-lg underline decoration-leaf decoration-2 underline-offset-8">
             الجزارة
           </Link>
         </div>

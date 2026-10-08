@@ -32,11 +32,11 @@ export function SummaryPanel() {
   }, []);
 
   if (err && !s) return <p className="py-10 text-center text-ember">مقدرناش نجيب الملخص. حاول تاني.</p>;
-  if (!s) return <p className="py-10 text-center text-charcoal/60">بنحسب ملخص النهارده…</p>;
+  if (!s) return <p className="py-10 text-center text-charcoal/70">بنحسب ملخص النهارده…</p>;
 
   const stat = (label: string, value: string, tone = "text-forest") => (
     <div className="rounded-2xl bg-white p-4">
-      <dt className="text-sm text-charcoal/65">{label}</dt>
+      <dt className="text-sm text-charcoal/70">{label}</dt>
       <dd className={`font-display text-4xl ${tone}`}>{value}</dd>
     </div>
   );
@@ -52,10 +52,10 @@ export function SummaryPanel() {
         {stat("مطعم (اتسلم)", `${formatMoney(s.restaurantRevenue)}`)}
         {stat("جزارة (اتسلم)", `${formatMoney(s.butcherRevenue)}`)}
       </dl>
-      {s.cancelled > 0 && <p className="mt-2 text-sm text-charcoal/60">طلبات ملغية: {s.cancelled}</p>}
+      {s.cancelled > 0 && <p className="mt-2 text-sm text-charcoal/70">طلبات ملغية: {s.cancelled}</p>}
       <h2 className="mt-6 font-display text-2xl">الأكتر مبيعًا</h2>
       {s.topItems.length === 0 ? (
-        <p className="py-4 text-charcoal/60">لسه مفيش طلبات النهارده.</p>
+        <p className="py-4 text-charcoal/70">لسه مفيش طلبات النهارده.</p>
       ) : (
         <ol className="mt-2 divide-y divide-charcoal/10 rounded-2xl bg-white px-4">
           {s.topItems.map((t, i) => (
@@ -63,14 +63,14 @@ export function SummaryPanel() {
               <span>
                 <span className="me-2 font-display text-xl text-ember">{i + 1}</span>
                 {t.name}
-                <span className="ms-2 text-sm text-charcoal/60">{t.unit === "kg" ? formatKg(t.qty) : `×${t.qty}`}</span>
+                <span className="ms-2 text-sm text-charcoal/70">{t.unit === "kg" ? formatKg(t.qty) : `×${t.qty}`}</span>
               </span>
               <span className="tabular-nums">{formatMoney(t.revenue)} {ar.currency}</span>
             </li>
           ))}
         </ol>
       )}
-      <p className="mt-3 text-xs text-charcoal/50">الإيراد = الطلبات اللي اتسلمت النهارده (بتوقيت القاهرة)، بالسعر النهائي بعد الوزن.</p>
+      <p className="mt-3 text-xs text-charcoal/70">الإيراد = الطلبات اللي اتسلمت النهارده (بتوقيت القاهرة)، بالسعر النهائي بعد الوزن.</p>
     </section>
   );
 }

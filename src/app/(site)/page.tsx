@@ -118,14 +118,14 @@ export default async function Home() {
           </Reveal>
           <ul className="mt-8">
             {cuts.map((c, i) => (
-              <Reveal key={c.id} delay={i * 70}>
-                <li className="flex items-baseline justify-between border-b border-leaf/25 py-3">
+              <li key={c.id}>
+                <Reveal delay={i * 70} className="flex items-baseline justify-between border-b border-leaf/25 py-3">
                   <span className="font-display text-3xl">{c.name_ar}</span>
                   <span className="font-display text-2xl text-saffron">
                     {formatMoney(c.base_price)} <span className="font-body text-sm text-ivory/70">{ar.currency} / كجم</span>
                   </span>
-                </li>
-              </Reveal>
+                </Reveal>
+              </li>
             ))}
           </ul>
           <Link
@@ -146,15 +146,15 @@ export default async function Home() {
         </Reveal>
         <ol className="mt-6">
           {STEPS.map((s, i) => (
-            <Reveal key={s.n} delay={i * 90}>
-              <li className={`flex items-start gap-4 py-3 ${i === 1 ? "ps-10" : i === 2 ? "ps-20" : ""}`}>
+            <li key={s.n}>
+              <Reveal delay={i * 90} className={`flex items-start gap-4 py-3 ${i === 1 ? "ps-10" : i === 2 ? "ps-20" : ""}`}>
                 <span className="font-display text-7xl leading-[0.8] text-ember">{s.n}</span>
                 <span>
                   <span className="block font-display text-2xl">{s.title}</span>
                   <span className="text-charcoal/80">{s.body}</span>
                 </span>
-              </li>
-            </Reveal>
+              </Reveal>
+            </li>
           ))}
         </ol>
       </section>
@@ -186,7 +186,7 @@ export default async function Home() {
               ))}
             </tbody>
           </table>
-          <p className="mt-1 text-xs text-charcoal/50">المواعيد دي مؤقتة لحد ما المطعم يضبطها.</p>
+          <p className="mt-1 text-xs text-charcoal/70">المواعيد دي مؤقتة لحد ما المطعم يضبطها.</p>
         </Reveal>
         <Reveal delay={120} className="mt-6 flex flex-wrap gap-3">
           {hasPhone && (

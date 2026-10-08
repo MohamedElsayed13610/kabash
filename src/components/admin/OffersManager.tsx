@@ -166,7 +166,7 @@ function Editor({ offer, targets, onClose }: { offer: AdminOffer | null; targets
           <div className="flex items-center justify-between py-3">
             <div>
               <p className="font-medium">العرض شغال</p>
-              <p className="text-sm text-charcoal/60">بيظهر في الصفحة الرئيسية ويتحسب تلقائيًا في الطلب</p>
+              <p className="text-sm text-charcoal/70">بيظهر في الصفحة الرئيسية ويتحسب تلقائيًا في الطلب</p>
             </div>
             <Switch label="العرض شغال" checked={f.active} onChange={(v) => set("active", v)} />
           </div>
@@ -175,7 +175,7 @@ function Editor({ offer, targets, onClose }: { offer: AdminOffer | null; targets
             <Switch label="عرض تجريبي" checked={f.is_sample} onChange={(v) => set("is_sample", v)} />
           </div>
         </div>
-        <p className="text-sm text-charcoal/60">لو أكتر من عرض اتنطبق على نفس الصنف، بيتحسب الأكبر خصمًا بس. وعرض واحد على إجمالي الطلب.</p>
+        <p className="text-sm text-charcoal/70">لو أكتر من عرض اتنطبق على نفس الصنف، بيتحسب الأكبر خصمًا بس. وعرض واحد على إجمالي الطلب.</p>
       </div>
 
       {formError && <p role="alert" className="mt-3 rounded-xl bg-ember/10 p-3 font-medium text-ember">{formError}</p>}
@@ -231,7 +231,7 @@ export function OffersManager({ offers, targets, renderedAt }: { offers: AdminOf
                     خصم {o.discount_type === "percent" ? `${o.discount_value}%` : `${formatMoney(o.discount_value)} ${ar.currency}`} على {nameOf(o)}
                   </p>
                   {(o.starts_at || o.ends_at) && (
-                    <p className="text-sm text-charcoal/60">
+                    <p className="text-sm text-charcoal/70">
                       {o.starts_at ? `من ${isoToCairoLocal(o.starts_at).replace("T", " ")}` : ""} {o.ends_at ? `لحد ${isoToCairoLocal(o.ends_at).replace("T", " ")}` : ""}
                     </p>
                   )}

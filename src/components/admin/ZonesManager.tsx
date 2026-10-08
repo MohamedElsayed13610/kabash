@@ -59,7 +59,7 @@ function Editor({ zone, onClose }: { zone: AdminZone | null; onClose: () => void
         <div className="flex items-center justify-between rounded-xl bg-charcoal/5 px-3 py-3">
           <div>
             <p className="font-medium">المنطقة شغالة</p>
-            <p className="text-sm text-charcoal/60">لو اتقفلت بتختفي من صفحة الطلب</p>
+            <p className="text-sm text-charcoal/70">لو اتقفلت بتختفي من صفحة الطلب</p>
           </div>
           <Switch label="المنطقة شغالة" checked={f.active} onChange={(v) => set("active", v)} />
         </div>
@@ -69,7 +69,7 @@ function Editor({ zone, onClose }: { zone: AdminZone | null; onClose: () => void
             <Switch label="منطقة تجريبية" checked={f.is_sample} onChange={(v) => set("is_sample", v)} />
           </div>
         )}
-        <p className="text-sm text-charcoal/60">التعديل بيسري على الطلبات الجديدة فورًا. الطلبات اللي اتبعتت قبل كده بتحتفظ بالسعر اللي اتحسبت بيه.</p>
+        <p className="text-sm text-charcoal/70">التعديل بيسري على الطلبات الجديدة فورًا. الطلبات اللي اتبعتت قبل كده بتحتفظ بالسعر اللي اتحسبت بيه.</p>
       </div>
       <div className="sticky bottom-0 mt-4 flex gap-3 bg-ivory py-2">
         <button type="button" onClick={save} disabled={busy} className={`${btn.primary} h-14 flex-1 !text-2xl`}>{busy ? "بنحفظ…" : "حفظ"}</button>
@@ -151,8 +151,8 @@ export function ZonesManager({ zones, threshold, renderedAt }: { zones: AdminZon
             return (
               <div data-zone={z.name_ar} className={`flex items-center gap-1 rounded-2xl border-2 border-charcoal/10 bg-white p-2 ${active ? "" : "opacity-60"}`}>
                 {handle}
-                <button onClick={() => void openZone(z.id)} className="min-w-0 flex-1 text-start" aria-label={`تعديل ${z.name_ar}`}>
-                  <span className="block font-display text-xl leading-tight">{z.name_ar} {z.is_sample && <SampleBadge />}</span>
+                <button onClick={() => void openZone(z.id)} className="min-w-0 flex-1 text-start">
+                  <span className="block font-display text-xl leading-tight"><span className="sr-only">تعديل </span>{z.name_ar} {z.is_sample && <SampleBadge />}</span>
                   <span className="block text-sm text-charcoal/70">
                     {formatMoney(z.fee)} {ar.currency}
                     {z.min_order > 0 ? ` · أقل طلب ${formatMoney(z.min_order)}` : ""}

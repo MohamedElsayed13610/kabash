@@ -130,7 +130,7 @@ export function ImageUploader({ value, onChange, folder, aspect = 1, outputWidth
       <p className="mb-1 block font-medium">{label}</p>
       <div className="flex items-center gap-3">
         <div
-          className="grid shrink-0 place-items-center overflow-hidden rounded-xl bg-charcoal/10 text-sm text-charcoal/50"
+          className="grid shrink-0 place-items-center overflow-hidden rounded-xl bg-charcoal/10 text-sm text-charcoal/70"
           style={{ width: 96, height: Math.round(96 / aspect) }}
         >
           {shown ? (

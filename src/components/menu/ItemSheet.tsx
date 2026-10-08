@@ -62,7 +62,7 @@ function SheetBody({ item, artIndex, onDone }: { item: Item; artIndex: number; o
             {item.serving_tag}
           </p>
         )}
-        {item.is_sample && <p className="mt-2 text-xs text-charcoal/50">صنف تجريبي، السعر مؤقت.</p>}
+        {item.is_sample && <p className="mt-2 text-xs text-charcoal/70">صنف تجريبي، السعر مؤقت.</p>}
 
         {item.item_variants.length > 0 && (
           <fieldset className="mt-5">

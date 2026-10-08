@@ -221,7 +221,7 @@ function ItemEditorBody({ item, category, categories, onClose }: { item: AdminIt
         {/* sizes */}
         <fieldset>
           <legend className="mb-1 font-medium">الأحجام (اختياري)</legend>
-          <p className="mb-2 text-sm text-charcoal/60">الفرق بيتضاف على السعر الأساسي. الحجم الأول هو الافتراضي.</p>
+          <p className="mb-2 text-sm text-charcoal/70">الفرق بيتضاف على السعر الأساسي. الحجم الأول هو الافتراضي.</p>
           {f.variants.map((v, i) => (
             <div key={i} className="mb-2 flex gap-2">
               <input aria-label={`اسم الحجم ${i + 1}`} placeholder="صغير" className={inputCls} value={v.name_ar} onChange={(e) => set("variants", f.variants.map((x, j) => (j === i ? { ...x, name_ar: e.target.value } : x)))} />
@@ -267,7 +267,7 @@ function ItemEditorBody({ item, category, categories, onClose }: { item: AdminIt
             <div key={k} className="flex items-center justify-between gap-3 py-3">
               <div>
                 <p className="font-medium">{label}</p>
-                <p className="text-sm text-charcoal/60">{hint}</p>
+                <p className="text-sm text-charcoal/70">{hint}</p>
               </div>
               <Switch label={label} checked={f[k]} onChange={(v) => set(k, v)} />
             </div>
@@ -428,8 +428,8 @@ export function MenuManager({ categories, renderedAt }: { categories: AdminCateg
                     className="flex min-h-12 flex-1 items-center justify-between gap-2 text-start"
                   >
                     <span>
-                      <span className={`font-display text-2xl ${c.active ? "" : "text-charcoal/40"}`}>{c.name_ar}</span>
-                      <span className="ms-2 text-sm text-charcoal/60">{c.items.length} صنف</span>
+                      <span className={`font-display text-2xl ${c.active ? "" : "text-charcoal/70"}`}>{c.name_ar}</span>
+                      <span className="ms-2 text-sm text-charcoal/70">{c.items.length} صنف</span>
                       {!c.active && <span className="ms-2 text-sm text-ember">مخفي</span>}
                     </span>
                     <span aria-hidden className={`transition-transform ${expanded ? "rotate-180" : ""}`}>▾</span>
@@ -464,7 +464,7 @@ export function MenuManager({ categories, renderedAt }: { categories: AdminCateg
                     </div>
 
                     {c.items.length === 0 ? (
-                      <p className="py-4 text-center text-charcoal/60">القسم فاضي. ضيف أول صنف.</p>
+                      <p className="py-4 text-center text-charcoal/70">القسم فاضي. ضيف أول صنف.</p>
                     ) : (
                       <SortableList
                         items={c.items}
