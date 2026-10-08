@@ -43,7 +43,7 @@ async function measure(browser, path, { throttle }) {
 const browser = await chromium.launch({ executablePath: CHROME, headless: true });
 const out = { label: LABEL, at: new Date().toISOString(), pages: {} };
 try {
-  for (const path of ["/", "/menu", "/butcher"]) {
+  for (const path of (process.env.PATHS ?? "/,/menu,/butcher").split(",")) {
     const runs = [];
     for (let i = 0; i < 3; i++) runs.push(await measure(browser, path, { throttle: true }));
     const pick = (k) => median(runs.map((r) => r[k]));

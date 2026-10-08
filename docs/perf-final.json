@@ -1,0 +1,89 @@
+{
+  "label": "final",
+  "at": "2026-10-08T07:36:54.611Z",
+  "supabaseRttMs": 141,
+  "public": {
+    "/": {
+      "cold": 201,
+      "warm": 11,
+      "status": 200
+    },
+    "/menu": {
+      "cold": 23,
+      "warm": 9,
+      "status": 200
+    },
+    "/butcher": {
+      "cold": 20,
+      "warm": 6,
+      "status": 200
+    },
+    "/offers": {
+      "cold": 41,
+      "warm": 32,
+      "status": 200
+    },
+    "/checkout": {
+      "cold": 66,
+      "warm": 5,
+      "status": 200
+    }
+  },
+  "admin": {
+    "/admin": {
+      "cold": 1097,
+      "warm": 522,
+      "status": 200
+    },
+    "/admin/menu": {
+      "cold": 824,
+      "warm": 202,
+      "status": 200
+    },
+    "/admin/zones": {
+      "cold": 194,
+      "warm": 176,
+      "status": 200
+    },
+    "/admin/offers": {
+      "cold": 958,
+      "warm": 209,
+      "status": 200
+    },
+    "/admin/reports": {
+      "cold": 241,
+      "warm": 214,
+      "status": 200
+    }
+  },
+  "adminNav": {
+    "requestMs": 712,
+    "supabaseCalls": 5,
+    "calls": [
+      "end=28863ms took=661ms GET /rest/v1/item_extras?select=id%2Citem_id%2Cname_ar%2Cprice%2Csort&order=sort.asc",
+      "end=28864ms took=662ms GET /rest/v1/item_variants?select=id%2Citem_id%2Cname_ar%2Cprice_delta%2Csort&order=sort.asc",
+      "end=28865ms took=664ms GET /rest/v1/items?select=id%2Ccategory_id%2Cname_ar%2Cdescription_ar%2Cunit%2Cbase_pric",
+      "end=28867ms took=659ms GET /rest/v1/profiles?select=name%2Crole%2Cactive&user_id=eq.5e8aa128-c4fa-43bf-b860-fd9169",
+      "end=28869ms took=669ms GET /rest/v1/categories?select=id%2Ctype%2Cname_ar%2Csort%2Cactive%2Cis_sample&order=sort.asc"
+    ]
+  },
+  "adminTapMs": {
+    "first": 515,
+    "all": [
+      515,
+      414,
+      1371,
+      375,
+      1364,
+      376
+    ],
+    "warmMedian": 376
+  },
+  "publicTapMs": {
+    "/menu": 264,
+    "/butcher": 71,
+    "/offers": 82,
+    "/menu#2": 125
+  },
+  "slowPhoneMenuLoadMs": 1952
+}

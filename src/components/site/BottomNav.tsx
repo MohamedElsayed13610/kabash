@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ar } from "@/messages/ar";
@@ -59,6 +59,12 @@ const TABS = [
   },
 ];
 
+/** Lights up the moment a tab is tapped, until the page arrives (instant feedback without a loading skeleton). */
+function Pending() {
+  const { pending } = useLinkStatus();
+  return pending ? <span aria-hidden className="absolute inset-x-4 top-0 h-1 animate-pulse rounded-b-full bg-saffron" /> : null;
+}
+
 export function BottomNav() {
   const path = usePathname();
   const router = useRouter();
@@ -86,10 +92,11 @@ export function BottomNav() {
               <Link
                 href={t.href}
                 aria-current={on ? "page" : undefined}
-                className={`flex h-[4.25rem] flex-col items-center justify-center gap-0.5 text-xs ${
+                className={`relative flex h-[4.25rem] flex-col items-center justify-center gap-0.5 text-xs ${
                   on ? "text-saffron" : "text-ivory/75"
                 }`}
               >
+                <Pending />
                 <span className="relative">
                   {t.icon}
                   {t.href === "/track" && live > 0 && (
